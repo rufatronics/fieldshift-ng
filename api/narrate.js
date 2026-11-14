@@ -4,9 +4,15 @@
 const INSTR =
   "You explain crop-rotation results to smallholder farmers in northern Nigeria. Use ONLY the facts in the JSON below. " +
   "Do not add agronomic claims, numbers or advice that are not in it. Mention rule IDs in brackets. " +
-  "State the information gaps. End by saying a farmer or agronomist must confirm before acting. Use short, plain sentences.";
+  "State the information gaps. End by saying a farmer or agronomist must confirm before acting. Use short, plain sentences. Write at most 120 words.";
 
+const HITS = new Map();   // best-effort per-instance rate limit: 8 requests / minute / IP
 module.exports = async (req, res) => {
+  if (req.method === "GET") return res.status(200).json({ ready: !!process.env.GEMINI_API_KEY });
+  const ip = String(req.headers["x-forwarded-for"] || "x").split(",")[0], now = Date.now();
+  const hits = (HITS.get(ip) || []).filter(t => now - t < 60000);
+  if (hits.length >= 8) return res.status(429).json({ error: "slow down" });
+  HITS.set(ip, [...hits, now]);
   if (req.method !== "POST") return res.status(405).json({ error: "POST only" });
   const key = process.env.GEMINI_API_KEY;
   if (!key) return res.status(503).json({ error: "narration not configured" });

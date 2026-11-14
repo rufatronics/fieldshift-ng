@@ -44,3 +44,9 @@ w1x:"Mmiri ozuzo {0} mm ezughị. {c} chọrọ ihe dị ka {1} mm.",w1p:"Mmiri 
 // Crop names: [en, ha, yo, ig]. English is used where the local name is uncertain; non-English UIs also show the English name.
 const CN={millet:["Pearl millet","Gero","Pearl millet","Pearl millet"],sorghum:["Sorghum","Dawa","Sorghum","Sorghum"],maize:["Maize","Masara","Àgbàdo","Ọka"],cowpea:["Cowpea","Wake","Ẹ̀wà","Agwa"],groundnut:["Groundnut","Gyada","Ẹ̀pà","Ahụekere"],rice:["Rainfed rice","Shinkafa","Ìrẹsì","Osikapa"]};
 const LANGS=[["ha","Hausa"],["yo","Yorùbá"],["ig","Igbo"],["en","English"]];
+// Added: tabs + AI helper panel
+const X2={en:{tabF:"Farmer view",tabT:"How it decides",aiTitle:"AI helper",aiNote:"Explains your plan in your language. It cannot change the scores.",aiNone:"AI helper is not switched on yet.",listen:"Listen",local:"Short summary (no AI)"},
+ha:{tabF:"Ga manomi",tabT:"Yadda yake yanke shawara",aiTitle:"Mataimakin AI",aiNote:"Yana bayyana shirinka da harshenka. Ba ya canza maki.",aiNone:"Ba a kunna mataimakin AI ba tukuna.",listen:"Saurara",local:"Taƙaitaccen bayani (ba AI)"},
+yo:{tabF:"Fún àgbẹ̀",tabT:"Bí ó ṣe ń pinnu",aiTitle:"Olùrànlọ́wọ́ AI",aiNote:"Ó ń ṣàlàyé ètò rẹ ní èdè rẹ. Kò lè yí máàkì padà.",aiNone:"A kò tíì tan olùrànlọ́wọ́ AI.",listen:"Gbọ́",local:"Àkótán kúkúrú (kò sí AI)"},
+ig:{tabF:"Maka onye ọrụ ugbo",tabT:"Otú o si ekpebi",aiTitle:"Onye enyemaka AI",aiNote:"Ọ na-akọwa atụmatụ gị n'asụsụ gị. Ọ nweghị ike ịgbanwe akara.",aiNone:"Emeghị onye enyemaka AI.",listen:"Gee ntị",local:"Nkenke (enweghị AI)"}};
+for(const l in X2)Object.assign(I18N[l],X2[l]);

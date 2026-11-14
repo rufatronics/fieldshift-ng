@@ -1,50 +1,57 @@
 <!doctype html>
-<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#1e5c34"><title>FieldShift NG</title>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#232b36"><title>FieldShift NG</title>
 <style>
-:root{--bg:#fff;--fg:#14201a;--mut:#4e5d53;--ln:#14201a;--sf:#eef2ec;--ac:#1e5c34;--on:#fff;--good:#1e7a3c;--fair:#a86a00;--weak:#b3261e}
-@media(prefers-color-scheme:dark){:root{--bg:#10150f;--fg:#eef3ea;--mut:#a9b6a8;--ln:#8fa08f;--sf:#1a211a;--ac:#6fcf8a;--on:#10150f;--good:#6fcf8a;--fair:#f0b84a;--weak:#ff8f85}}
-*{box-sizing:border-box;border-radius:0}body{margin:0 auto;max-width:720px;background:var(--bg);color:var(--fg);font:17px/1.5 "Noto Sans","Segoe UI",Roboto,system-ui,sans-serif;padding:0 16px 40px}
-header{border-bottom:3px solid var(--ln);padding:14px 0 12px}h1{font-size:24px;margin:0}header p{margin:2px 0 10px;color:var(--mut)}
-.lg{display:grid;grid-template-columns:repeat(4,1fr);gap:0;border:2px solid var(--ln)}.lg button{background:var(--bg);color:var(--fg);border:0;border-right:2px solid var(--ln);min-height:48px;font:inherit;font-weight:600;cursor:pointer}.lg button:last-child{border-right:0}.lg button[aria-pressed=true]{background:var(--ac);color:var(--on)}
-ol{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;list-style:none;padding:0;margin:14px 0}ol li{border-top:6px solid var(--ln);padding-top:4px;font-size:14px;color:var(--mut)}ol li.on{border-color:var(--ac);color:var(--fg);font-weight:700}
-h2{font-size:18px;margin:22px 0 8px}label{display:block;margin:12px 0 4px;font-weight:600}
-select,input[type=range]{width:100%}select{min-height:48px;padding:8px;border:2px solid var(--ln);background:var(--bg);color:var(--fg);font:inherit}
-.ck{display:flex;gap:12px;align-items:center;min-height:48px;font-weight:400;border:2px solid var(--ln);padding:6px 12px;margin:8px 0}.ck input{width:26px;height:26px;accent-color:var(--ac);flex:none}
-input[type=range]{accent-color:var(--ac);height:32px}.pf{display:grid;grid-template-columns:1fr 1fr}.pf .ck{margin:-2px 0 0 -2px}
-.row{display:grid;gap:8px}.row.r3{grid-template-columns:repeat(3,1fr)}.nav{display:flex;gap:8px;margin-top:20px}
-.btn{flex:1;min-height:52px;background:var(--ac);color:var(--on);border:2px solid var(--ac);font:inherit;font-weight:700;cursor:pointer}.btn.alt{background:var(--bg);color:var(--fg);border-color:var(--ln)}
-:focus-visible{outline:4px solid #e0a100;outline-offset:2px}
-.test{border:2px solid var(--fair);color:var(--fair);padding:8px 12px;font-weight:700;font-size:15px;margin:12px 0}
-.card{border:2px solid var(--ln);border-left-width:12px;padding:12px 14px;margin:14px 0}.card.good{border-left-color:var(--good)}.card.fair{border-left-color:var(--fair)}.card.weak{border-left-color:var(--weak)}
-.ti{font-size:15px;color:var(--mut);font-weight:700}.bd{font-size:22px;font-weight:800}.good .bd{color:var(--good)}.fair .bd{color:var(--fair)}.weak .bd{color:var(--weak)}
-.seq{display:flex;flex-wrap:wrap;align-items:stretch;gap:6px;margin:8px 0}.cr{flex:1;min-width:92px;background:var(--sf);border:2px solid var(--ln);padding:6px 8px}.cr small{display:block;color:var(--mut);font-size:13px}.cr b{font-size:16px}
-.sm{font-size:15px;color:var(--mut)}ul{padding-left:20px;margin:6px 0}li{margin:4px 0}li.x{color:var(--weak);font-weight:600}details{margin-top:8px;border-top:2px solid var(--ln);padding-top:6px}summary{cursor:pointer;font-weight:700;min-height:32px}
-.tl{display:grid;grid-template-columns:repeat(12,1fr);border:2px solid var(--ln)}.tl div{height:40px;text-align:center;padding-top:9px;font-size:13px;font-weight:700;color:#000;border-right:1px solid var(--ln)}.tl div:last-child{border:0}
-#narout{white-space:pre-wrap;margin-top:10px;border-left:6px solid var(--ac);padding-left:10px}.cs div{padding:6px 0;border-bottom:1px solid var(--ln)}
-[hidden]{display:none!important}@media(prefers-reduced-motion:no-preference){section{animation:in .2s}}@keyframes in{from{opacity:.4}}
+:root{--bg:#e8e5e0;--sf:#f3f1ed;--ink:#232b36;--mut:#59626e;--rose:#cfbdbb;--mau:#6b5252;--good:#2d6a43;--fair:#8a5a00;--weak:#a1302a;--on:#f3f1ed;--hl:#e0a100}
+@media(prefers-color-scheme:dark){:root{--bg:#14181e;--sf:#1c222a;--ink:#e8e5e0;--mut:#9aa3ad;--rose:#6b5a5a;--mau:#cfbdbb;--good:#7fd09a;--fair:#f0b84a;--weak:#ff8f85;--on:#14181e}}
+*{box-sizing:border-box;border-radius:0}body{margin:0;background:var(--bg);color:var(--ink);font:17px/1.5 "DM Sans","Segoe UI",Roboto,system-ui,sans-serif}
+.mono,small,.tab,.lg button,.btn,ol li,.nd b{font-family:ui-monospace,"DM Mono","SF Mono",Menlo,Consolas,monospace}
+.frame{max-width:760px;margin:0 auto;border-left:1.5px solid var(--ink);border-right:1.5px solid var(--ink);min-height:100vh;background:var(--bg)}
+.pad{padding:18px 18px}header{border-bottom:1.5px solid var(--ink)}h1{font-size:30px;line-height:1.1;margin:0;letter-spacing:-.5px}header p{margin:6px 0 14px;color:var(--mut);font-size:14px}
+.lg{display:grid;grid-template-columns:repeat(4,1fr);border:1.5px solid var(--ink)}.lg button{background:none;color:var(--ink);border:0;border-right:1.5px solid var(--ink);min-height:46px;font-size:14px;cursor:pointer}.lg button:last-child{border:0}.lg button[aria-pressed=true]{background:var(--ink);color:var(--on)}
+.tabs{display:grid;grid-template-columns:1fr 1fr;border-bottom:1.5px solid var(--ink);position:sticky;top:0;background:var(--bg);z-index:5}.tab{background:none;border:0;color:var(--mut);min-height:52px;font-size:14px;cursor:pointer;border-bottom:4px solid transparent;padding:0 8px}.tab[aria-selected=true]{color:var(--ink);font-weight:700;border-bottom-color:var(--ink)}
+ol{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;list-style:none;padding:0;margin:0 0 6px}ol li{border-top:5px solid var(--rose);padding-top:5px;font-size:12.5px;color:var(--mut)}ol li.on{border-color:var(--ink);color:var(--ink);font-weight:700}
+h2{font-size:20px;margin:26px 0 8px;letter-spacing:-.2px}label{display:block;margin:14px 0 4px;font-weight:600}
+select{width:100%;min-height:50px;padding:8px;border:1.5px solid var(--ink);background:var(--sf);color:var(--ink);font:inherit}input[type=range]{width:100%;height:34px;accent-color:var(--ink)}
+.ck{display:flex;gap:12px;align-items:center;min-height:50px;font-weight:400;border:1.5px solid var(--ink);background:var(--sf);padding:6px 12px;margin:8px 0}.ck input{width:26px;height:26px;accent-color:var(--ink);flex:none}.pf{display:grid;grid-template-columns:1fr 1fr}.pf .ck{margin:-1.5px 0 0 -1.5px}
+.row3{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.nav{display:flex;gap:10px;margin-top:22px}
+.btn{flex:1;min-height:56px;background:var(--ink);color:var(--on);border:0;font-size:15px;font-weight:700;cursor:pointer;clip-path:polygon(16px 0,100% 0,100% calc(100% - 16px),calc(100% - 16px) 100%,0 100%,0 16px)}.btn.alt{background:var(--rose);color:#232b36}.btn[hidden]{display:none}
+:focus-visible{outline:none;box-shadow:inset 0 0 0 4px var(--hl)}select:focus-visible,input:focus-visible{outline:4px solid var(--hl);outline-offset:2px;box-shadow:none}
+.test{border:1.5px solid var(--fair);color:var(--fair);padding:8px 12px;font-weight:700;font-size:14px;margin-bottom:14px}
+.card{border:1.5px solid var(--ink);background:var(--sf);margin:16px 0}.ch{padding:14px 16px}.ti{font-size:13px;color:var(--mut)}
+.bd{display:inline-block;margin:6px 0;padding:4px 22px 4px 12px;font-size:22px;font-weight:800;color:#fff;clip-path:polygon(0 0,100% 0,calc(100% - 12px) 100%,0 100%)}.good .bd{background:var(--good)}.fair .bd{background:var(--fair)}.weak .bd{background:var(--weak)}.dk .good .bd,.dk .fair .bd,.dk .weak .bd{color:#14181e}
+.seq{display:flex;flex-wrap:wrap;gap:0;margin:8px 0;border:1.5px solid var(--ink)}.cr{flex:1;min-width:30%;padding:8px 10px;border-right:1.5px solid var(--ink)}.cr:last-child{border:0}.cr small{display:block;color:var(--mut);font-size:12px}.cr b{font-size:17px}
+.sm{font-size:14px;color:var(--mut)}ul{padding-left:20px;margin:6px 0}li{margin:5px 0}li.x{color:var(--weak);font-weight:700}details{margin-top:10px;border-top:1.5px solid var(--ink);padding-top:8px}summary{cursor:pointer;font-weight:700;min-height:34px}
+.tl{display:grid;grid-template-columns:repeat(12,1fr);border:1.5px solid var(--ink)}.tl div{height:40px;text-align:center;padding-top:9px;font-size:13px;font-weight:700;color:#000;border-right:1px solid var(--ink)}.tl div:last-child{border:0}
+.ai{border:1.5px solid var(--ink);background:var(--sf);margin-top:26px}.ai .hd{border-bottom:1.5px solid var(--ink);padding:10px 16px;font-size:14px;display:flex;justify-content:space-between;gap:8px}.ai .bdy{padding:14px 16px}#aist{font-size:12.5px;color:var(--mut)}#narout{white-space:pre-wrap;margin-top:12px;border-left:5px solid var(--mau);padding-left:12px}.ai .nav{margin-top:10px}
+.nd{display:grid;grid-template-columns:44px 1fr;border:1.5px solid var(--ink);background:var(--sf)}.nd b{background:var(--ink);color:var(--on);display:flex;align-items:center;justify-content:center;font-size:15px}.nd div{padding:10px 14px}.nd h3{margin:0 0 2px;font-size:16px}.nd p{margin:2px 0;font-size:14.5px}.ar{text-align:center;color:var(--mut);font:14px/1.2 ui-monospace,monospace;padding:3px 0}
+.chip{display:inline-block;border:1.5px solid var(--ink);padding:1px 8px;margin:2px 4px 2px 0;font:12.5px ui-monospace,monospace}
+.wr{display:grid;grid-template-columns:78px 1fr 92px;gap:8px;align-items:center;margin:7px 0;font:13px ui-monospace,monospace}.bar{height:20px;background:var(--ink);clip-path:polygon(0 0,calc(100% - 7px) 0,100% 7px,100% 100%,0 100%)}.bar.m{background:var(--mau)}.trk{background:var(--rose);height:20px}
+.cs div{padding:7px 0;border-bottom:1px solid var(--rose)}code{font:13px ui-monospace,monospace}pre{white-space:pre-wrap;word-break:break-word;font:12px/1.4 ui-monospace,monospace;background:var(--bg);border:1.5px solid var(--ink);padding:8px;margin:6px 0}
+[hidden]{display:none!important}@media(prefers-reduced-motion:no-preference){section{animation:in .2s}}@keyframes in{from{opacity:.5}}
 </style></head><body>
-<header><h1 data-i="app"></h1><p data-i="tag"></p><div class="lg" id="lg" role="group"></div></header>
-<ol id="st"><li data-i="st1"></li><li data-i="st2"></li><li data-i="st3"></li></ol>
+<div class="frame"><header class="pad"><h1 data-i="app"></h1><p class="mono" data-i="tag"></p><div class="lg" id="lg" role="group"></div></header>
+<div class="tabs" role="tablist"><button class="tab" role="tab" data-tab="1" aria-selected="true" data-i="tabF"></button><button class="tab" role="tab" data-tab="2" aria-selected="false" data-i="tabT"></button></div>
+<main id="pf" class="pad"><ol id="st"><li data-i="st1"></li><li data-i="st2"></li><li data-i="st3"></li></ol>
 <section id="s1"><label for="zone" data-i="zone"></label><select id="zone"></select>
 <label class="ck"><input type="checkbox" id="low"><span data-i="low"></span></label><label class="ck"><input type="checkbox" id="irr"><span data-i="irr"></span></label>
 <label for="store" data-i="store"></label><select id="store"><option value="good" data-i="sg"></option><option value="ok" data-i="sa" selected></option><option value="poor" data-i="sp"></option></select>
 <div class="nav"><button class="btn" data-go="2" data-i="next"></button></div></section>
-<section id="s2" hidden><h2 data-i="cur"></h2><div class="row r3" id="cur"></div>
-<h2 data-i="pref"></h2><div id="pref"></div><h2 data-i="pri"></h2><div id="pr"></div>
+<section id="s2" hidden><h2 data-i="cur"></h2><div class="row3" id="cur"></div><h2 data-i="pref"></h2><div id="pref"></div><h2 data-i="pri"></h2><div id="pr"></div>
 <div class="nav"><button class="btn alt" data-go="1" data-i="back"></button><button class="btn" data-go="3" data-i="show"></button></div></section>
-<section id="s3" hidden><div class="test" id="ban"></div>
-<div id="out"></div>
+<section id="s3" hidden><div class="test" id="ban"></div><div id="out"></div>
+<div class="ai"><div class="hd"><b data-i="aiTitle"></b><span id="aist"></span></div><div class="bdy"><div class="sm" data-i="aiNote"></div>
+<div class="nav"><button class="btn" id="nar" data-i="explain"></button><button class="btn alt" id="lis" data-i="listen" hidden></button></div><div id="narout" role="status" aria-live="polite"></div></div></div>
 <h2 data-i="wi"></h2><label for="dRain"><span data-i="rain"></span>: <b id="vr"></b>%</label><input type="range" id="dRain" min="-30" max="20" value="0">
 <label for="dT"><span data-i="heat"></span>: +<b id="vt"></b> C</label><input type="range" id="dT" min="0" max="3" step="0.5" value="0">
 <h2 data-i="bare"></h2><div class="tl" id="tl"></div><div class="sm" data-i="bareN"></div>
-<div class="nav"><button class="btn" id="nar" data-i="explain"></button></div><div id="narout" role="status"></div>
-<h2 data-i="screen"></h2><div class="cs" id="crops"></div><p class="sm" id="meta"></p>
-<div class="nav"><button class="btn alt" data-go="2" data-i="edit"></button></div></section>
+<div class="nav"><button class="btn alt" data-go="2" data-i="edit"></button></div></section></main>
+<main id="pt" class="pad" hidden><p class="mono sm">English only. Rules and weights decide. The AI only explains the result.</p><div id="chain"></div></main></div>
 <script src="data.js"></script><script src="zones.js"></script><script src="i18n.js"></script>
 <script>
 const $=i=>document.getElementById(i),sum=a=>a.reduce((x,y)=>x+y,0),cl=(x,a=0,b=100)=>Math.max(a,Math.min(b,x)),MO="JFMAMJJASOND",MN=["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"],LI=LANGS.map(l=>l[0]);
-let LG="en",LAST,STEP=1;try{LG=localStorage.getItem("fs-lang")||"en"}catch(e){}if(!I18N[LG])LG="en";
-const cn=(l,c)=>{const i=LI.indexOf(l),en=CN[c][0],n=l=="en"?en:CN[c][{ha:1,yo:2,ig:3}[l]];return n==en?en:n+" ("+en+")"};
+let LG="en",LAST,STEP=1,TAB=1,TC,AI=null;try{LG=localStorage.getItem("fs-lang")||"en"}catch(e){}if(!I18N[LG])LG="en";
+document.body.classList.toggle("dk",matchMedia("(prefers-color-scheme:dark)").matches);
+const cn=(l,c)=>{const en=CN[c][0],n=l=="en"?en:CN[c][{ha:1,yo:2,ig:3}[l]];return n==en?en:n+" ("+en+")"};
 const T=(l,k,a=[],c)=>(I18N[l][k]||I18N.en[k]).replace(/\{(\d|c)\}/g,(m,i)=>i=="c"?cn(l,c):a[+i]),t=(k,a)=>T(LG,k,a),N=c=>cn(LG,c);
 const KS=["water","heat","season","flood","store","soil","market"],GK=["g1","g2","g3","g4"];
 function P(){return{zone:$("zone").value,low:$("low").checked,irr:$("irr").checked,store:$("store").value,dRain:+$("dRain").value,dT:+$("dT").value,
@@ -52,7 +59,7 @@ function P(){return{zone:$("zone").value,low:$("low").checked,irr:$("irr").check
  pref:[...document.querySelectorAll("#pref input:checked")].map(e=>e.value),cur:[0,1,2].map(i=>$("e"+i).value)}}
 function X(p){const z=ZONES[p.zone],rain=z.rain.map(r=>r*(1+p.dRain/100));return{z,rain,tmax:z.tmax.map(t=>t+p.dT),season:rain.filter(r=>r>=50).length*30+20}}
 const win=c=>[...Array(Math.ceil(c.cyc/30))].map((_,k)=>(c.pm-1+k)%12);
-// Rules decide; nothing here is generated by an LLM. Rule = {id, k:"x" (eliminate) | "p" (penalty), key (text id), a (numbers)}.
+// Rules decide; nothing here is generated by an LLM.
 function crop(id,p,x){const c=CROPS[id],w=win(c),R=[],S={},add=(i,k,key,a=[])=>R.push({id:i,k,key,a,c:id});
  const rain=sum(w.map(m=>x.rain[m]))+(p.irr?150:0),tpk=Math.max(...w.map(m=>x.tmax[m])),pk=Math.max(...w.map(m=>x.rain[m])),r0=Math.round(rain);
  S.water=cl((rain-c.w[0]*.8)/(c.w[1]-c.w[0]*.8)*100);
@@ -65,7 +72,7 @@ function crop(id,p,x){const c=CROPS[id],w=win(c),R=[],S={},add=(i,k,key,a=[])=>R
  if(S.store<60)add("R-STORE-05","p","t5",[MN[hm],hr]);
  S.soil=cl(40+30*c.nfix+6*c.ero);S.market=p.pref.includes(id)?100:55;
  const W={water:1+p.w.water,heat:1.5,season:1.5,flood:1.5,store:1+p.w.store,soil:1+p.w.soil,market:.5+p.w.cash*.5};
- const out=R.some(r=>r.k=="x");return{id,S,R,out,sc:out?0:KS.reduce((a,k)=>a+S[k]*W[k],0)/sum(Object.values(W))}}
+ const out=R.some(r=>r.k=="x");return{id,S,R,out,W,m:{r0,tpk,pk,hr},sc:out?0:KS.reduce((a,k)=>a+S[k]*W[k],0)/sum(Object.values(W))}}
 function rot(seq,p,x){const cs=seq.map(i=>crop(i,p,x)),notes=[];let s=sum(cs.map(c=>c.sc))/seq.length;
  if(!seq.some(i=>CROPS[i].fam=="legume")){s-=10;notes.push({id:"R-SEQ-01",key:"q1",a:[]})}
  let rep=0,bon=0;seq.forEach((a,i)=>{const b=seq[(i+1)%seq.length];if(a==b)rep++;else if(CROPS[a].fam!=CROPS[b].fam)bon++});
@@ -74,38 +81,64 @@ function rot(seq,p,x){const cs=seq.map(i=>crop(i,p,x)),notes=[];let s=sum(cs.map
 function cands(p,x){const ok=Object.keys(CROPS).map(i=>crop(i,p,x)).filter(c=>!c.out).sort((a,b)=>b.sc-a.sc).slice(0,5).map(c=>c.id),L=[];
  ok.forEach(a=>ok.forEach(b=>ok.forEach(c=>{if(a!=b&&b!=c&&c!=a)L.push(rot([a,b,c],p,x))})));
  const seen={};return L.sort((a,b)=>b.s-a.s).filter(r=>{const k=[...r.seq].sort().join();return seen[k]?0:seen[k]=1})}
-const rtxt=(l,r)=>r.map(q=>[q.id,T(l,q.key,q.a,q.c),q.k]);
-function facts(l,r){return r.cs.flatMap(c=>rtxt(l,c.R)).concat(rtxt(l,r.notes))}
-function card(r,title){const u=3+2*GK.length,s=Math.round(r.s),b=r.bad?"weak":s>=75?"good":s>=55?"fair":"weak",avg=k=>sum(r.cs.map(c=>c.S[k]))/3,o=[...KS].sort((a,b)=>avg(b)-avg(a)),
- f=facts(LG,r).map(q=>`<li${q[2]=="x"?' class="x"':""}>${q[1]} <span class="sm">${q[0]}</span></li>`).join("");
- return`<div class="card ${b}"><div class="ti">${title}</div><div class="bd">${t(b)}</div><div class="seq">${r.seq.map((c,i)=>`<div class="cr"><small>${t("sn")} ${i+1}</small><b>${N(c)}</b></div>`).join("")}</div>
- <div class="sm">${t("range",[s,Math.max(0,s-u),Math.min(100,s+u)])}<br>${t("strong",[t("k_"+o[0]),t("k_"+o[6])])}</div>
- <h2>${t("warn")}</h2><ul>${f||"<li>"+t("nowarn")+"</li>"}</ul><details><summary>${t("gaps")}</summary><ul>${GK.map(g=>"<li>"+t(g)+"</li>").join("")}</ul></details><p class="sm"><b>${t("review")}</b></p></div>`}
-function render(){const p=P(),x=X(p);$("vr").textContent=p.dRain;$("vt").textContent=p.dT;
+const rtxt=(l,r)=>r.map(q=>[q.id,T(l,q.key,q.a,q.c),q.k]),facts=(l,r)=>r.cs.flatMap(c=>rtxt(l,c.R)).concat(rtxt(l,r.notes));
+function calc(){const p=P(),x=X(p),base=rot(p.cur,p,x),c=cands(p,x);LAST={p,x,base,c:c.slice(0,2)};return LAST}
+function card(r,title){const u=3+2*GK.length,s=Math.round(r.s),b=r.bad?"weak":s>=75?"good":s>=55?"fair":"weak",
+ f=facts(LG,r).map(q=>`<li${q[2]=="x"?' class="x"':""}>${q[1]} <small>${q[0]}</small></li>`).join("");
+ return`<div class="card ${b}"><div class="ch"><div class="ti mono">${title}</div><div class="bd">${t(b)}</div><div class="seq">${r.seq.map((c,i)=>`<div class="cr"><small>${t("sn")} ${i+1}</small><b>${N(c)}</b></div>`).join("")}</div>
+ <div class="sm">${t("range",[s,Math.max(0,s-u),Math.min(100,s+u)])}</div><h2>${t("warn")}</h2><ul>${f||"<li>"+t("nowarn")+"</li>"}</ul>
+ <details><summary>${t("gaps")}</summary><ul>${GK.map(g=>"<li>"+t(g)+"</li>").join("")}</ul></details><p class="sm"><b>${t("review")}</b></p></div></div>`}
+function render(){const{p,x,base,c}=calc();$("vr").textContent=p.dRain;$("vt").textContent=p.dT;$("narout").textContent="";$("lis").hidden=true;
  $("tl").innerHTML=x.z.ndvi.map((v,m)=>`<div style="background:${v<.2?"#f0a13a":`hsl(110,45%,${80-v*45}%)`}" title="${MN[m]} NDVI ${v}">${MO[m]}</div>`).join("");
- const base=rot(p.cur,p,x),c=cands(p,x);LAST={base,c:c.slice(0,2)};$("narout").textContent="";
- $("out").innerHTML=card(base,t("now"))+(c.length<2?`<div class="test">${t("none")}</div>`:"")+c.slice(0,2).map(r=>card(r,t("opt"))).join("");
- $("crops").innerHTML=Object.keys(CROPS).map(i=>crop(i,p,x)).sort((a,b)=>b.sc-a.sc).map(c=>`<div>${c.out?"✗":"✓"} <b>${N(c.id)}</b> ${Math.round(c.sc)}${c.out?` <span class="sm">${c.R.filter(r=>r.k=="x").map(r=>r.id).join(", ")}</span>`:""}</div>`).join("")}
+ $("out").innerHTML=card(base,t("now"))+(c.length<2?`<div class="test">${t("none")}</div>`:"")+c.slice(0,2).map(r=>card(r,t("opt"))).join("")}
+// Technical tab: the same numbers, laid out as the decision chain.
+const RULES=[["R-WATER-01","gate/penalty","Rain in the crop's growing months (+150 mm if irrigated) vs its water need"],["R-SEASON-02","gate","Crop cycle longer than the rainy season removes the crop"],["R-HEAT-03","penalty","Hottest month in the window vs crop heat limit (27 + 2 x tolerance C)"],["R-FLOOD-04","gate/penalty","Peak monthly rain on a low plot vs flood tolerance"],["R-STORE-05","penalty","Harvest-month humidity x rot sensitivity x storage quality"],["R-SEQ-01","-10","Rotation has no legume"],["R-SEQ-02","-8 each","Same crop back to back"],["R-SEQ-03","+2 each","Switch between grain and legume"],["R-GATE","flag","Any crop in the rotation failed a gate: not recommended"]];
+const nd=(n,h,b)=>`<div class="nd"><b>${n}</b><div><h3>${h}</h3>${b}</div></div>`,AR='<div class="ar">▼</div>';
+function tech(){const{p,x,base,c}=calc(),all=Object.keys(CROPS).map(i=>crop(i,p,x)),rem=all.filter(a=>a.out),W=all[0].W,ws=sum(Object.values(W)),pc=k=>(100*W[k]/ws).toFixed(0);
+ if(!TC||!CROPS[TC])TC=(c[0]||base).seq[0];const cc=all.find(a=>a.id==TC),sc=r=>Math.round(r.s)+"/100";
+ const mr=x.rain.filter(r=>r>=50).length,bp=JSON.stringify({baseline:brief(base),options:c.map(brief)},null,1);
+ $("chain").innerHTML=nd(1,"Inputs",`<p>Zone <b>${x.z.name}</b>: monthly rain, max temperature, humidity, NDVI${typeof DATA_META!="undefined"&&DATA_META?" ("+DATA_META.rainSource+" rain, "+[].concat(DATA_META.years||[]).join("-")+")":" (demo data)"}.</p><p>Farmer: ${p.low?"low plot, ":""}${p.irr?"irrigation, ":""}storage ${p.store}, now ${p.cur.join(" → ")}. What-if: rain ${p.dRain}%, +${p.dT} C.</p>`)+AR
+ +nd(2,"Season length",`<p>${mr} months with 50+ mm rain gives a season of about <b>${x.season} days</b>.</p>`)+AR
+ +nd(3,"Gates (can remove a crop)",`<p>R-WATER-01, R-SEASON-02, R-FLOOD-04.</p><p>Removed now: <b>${rem.length?rem.map(a=>a.id+" ["+a.R.filter(r=>r.k=="x").map(r=>r.id)+"]").join(", "):"none"}</b> (${rem.length} of ${all.length}).</p>`)+AR
+ +nd(4,"Score each crop on 7 factors",`<p>Weights now (from the farmer's sliders):</p><p>${KS.map(k=>`<span class="chip">${k} ${pc(k)}%</span>`).join("")}</p><p>Crop score = sum of (factor score x weight).</p>`)+AR
+ +nd(5,"Combine into a rotation",`<p>Average of 3 crop scores, then R-SEQ-01 (-10), R-SEQ-02 (-8 each), R-SEQ-03 (+2 each). Any gate failure flags the rotation (R-GATE).</p>`)+AR
+ +nd(6,"Rank",`<p>Your rotation: <b>${sc(base)}</b> ${base.seq.join(" → ")}</p>${c.map((r,i)=>`<p>Option ${i+1}: <b>${sc(r)}</b> ${r.seq.join(" → ")}</p>`).join("")||"<p>Fewer than 2 safe options.</p>"}`)+AR
+ +nd(7,"AI explains (Gemma 4 via Google AI)",`<p>Receives only the result below. Cannot change a score or add advice. Failure falls back to a local summary.</p><details><summary>Exact payload sent</summary><pre>${bp}</pre></details>`)
+ +`<h2>Why one crop scored what it did</h2><select id="tc" aria-label="crop">${Object.keys(CROPS).map(k=>`<option value="${k}"${k==TC?" selected":""}>${CROPS[k].n}</option>`).join("")}</select>
+ ${cc.out?`<p class="sm"><b>Removed by gate:</b> ${cc.R.filter(r=>r.k=="x").map(r=>r.id+": "+T("en",r.key,r.a,r.c)).join("; ")}</p>`:""}
+ ${KS.map(k=>`<div class="wr"><span>${k}</span><div class="trk"><div class="bar" style="width:${Math.round(cc.S[k])}%"></div></div><span>${Math.round(cc.S[k])} x ${pc(k)}%</span></div>`).join("")}
+ <div class="wr"><b>score</b><div class="trk"><div class="bar m" style="width:${Math.round(cc.sc)}%"></div></div><b>${cc.out?"removed":Math.round(cc.sc)}</b></div>
+ <h2>All crops</h2><div class="cs">${[...all].sort((a,b)=>b.sc-a.sc).map(a=>`<div>${a.out?"✗":"✓"} <b>${CROPS[a.id].n}</b> ${Math.round(a.sc)}${a.out?` <small>${a.R.filter(r=>r.k=="x").map(r=>r.id).join(", ")}</small>`:""}</div>`).join("")}</div>
+ <h2>Rule registry</h2>${RULES.map(r=>`<p><code>${r[0]}</code> <small>${r[1]}</small><br>${r[2]}</p>`).join("")}
+ <h2>Data and limits</h2>${PLACEHOLDER?'<div class="test">Crop parameters are placeholders until sourced and reviewed.</div>':""}<p class="sm">${typeof DATA_META!="undefined"&&DATA_META?`${DATA_META.repo}, ${DATA_META.zones} zone(s), generated ${DATA_META.generated}.`:"Demo climate data."} Zone-level data, not field-level. No soil or price data. A farmer or agronomist must confirm before acting.</p>`}
 function fill(id,items){const s=$(id),v=s.value;s.innerHTML=items.map(a=>`<option value="${a[0]}">${a[1]}</option>`).join("");if(v)s.value=v}
 function apply(){document.documentElement.lang=LG;document.querySelectorAll("[data-i]").forEach(e=>e.textContent=t(e.dataset.i));
  $("lg").innerHTML=LANGS.map(l=>`<button aria-pressed="${l[0]==LG}" data-l="${l[0]}" lang="${l[0]}">${l[1]}</button>`).join("");
  const cs=Object.keys(CROPS).map(k=>[k,N(k)]);[0,1,2].forEach(i=>fill("e"+i,cs));
- document.querySelectorAll("#pref span").forEach(e=>e.textContent=N(e.dataset.c));
- document.querySelectorAll("#pr label span").forEach(e=>e.textContent=t(e.dataset.k));
- $("ban").hidden=!PLACEHOLDER;$("ban").textContent=t("test");
- $("meta").textContent=DATA_META?`${DATA_META.repo}, ${DATA_META.zones}, ${[].concat(DATA_META.years||[]).join("-")}, ${DATA_META.rainSource}, ${DATA_META.generated}`:"Demo climate data";
- if(STEP==3)render()}
+ document.querySelectorAll("#pref span").forEach(e=>e.textContent=N(e.dataset.c));document.querySelectorAll("#pr label span").forEach(e=>e.textContent=t(e.dataset.k));
+ $("ban").hidden=!PLACEHOLDER;$("ban").textContent=t("test");aiStatus();if(STEP==3&&TAB==1)render();if(TAB==2)tech()}
 function go(n){STEP=n;[1,2,3].forEach(i=>{$("s"+i).hidden=i!=n;$("st").children[i-1].className=i<=n?"on":""});if(n==3)render();scrollTo(0,0)}
-fill("zone",Object.keys(ZONES).map(k=>[k,ZONES[k].name]));
-$("cur").innerHTML=[0,1,2].map(i=>`<div><select id="e${i}" aria-label="${i+1}"></select></div>`).join("");[0,1,2].forEach(i=>$("e"+i).value="sorghum");
-$("pref").innerHTML=`<div class="pf">`+Object.keys(CROPS).map(k=>`<label class="ck"><input type="checkbox" value="${k}"><span data-c="${k}"></span></label>`).join("")+`</div>`;
-$("pr").innerHTML=[["water","pw"],["soil","ps"],["store","pt"],["cash","pc"]].map(a=>`<label for="w_${a[0]}"><span data-k="${a[1]}"></span></label><input type="range" id="w_${a[0]}" min="1" max="5" value="3">`).join("");
-document.addEventListener("input",()=>STEP==3&&render());
-document.addEventListener("click",e=>{const b=e.target.closest("button");if(!b)return;if(b.dataset.go)go(+b.dataset.go);if(b.dataset.l){LG=b.dataset.l;try{localStorage.setItem("fs-lang",LG)}catch(x){}apply()}});
+function tab(n){TAB=n;$("pf").hidden=n!=1;$("pt").hidden=n!=2;document.querySelectorAll(".tab").forEach(b=>b.setAttribute("aria-selected",b.dataset.tab==n));if(n==2)tech();scrollTo(0,0)}
+// AI helper: GET /api/narrate says whether the key is set; POST narrates; any failure falls back to a local summary.
 const brief=r=>({crops:r.seq.map(c=>CN[c][0]),score:Math.round(r.s),checks:facts("en",r).map(q=>q[0]+" "+q[1]),gaps:GK.map(g=>T("en",g))});
 const local=()=>[LAST.base].concat(LAST.c).map((r,i)=>`${i?t("opt"):t("now")}: ${r.seq.map(N).join(" > ")} = ${Math.round(r.s)}/100`).join("\n")+"\n"+t("review");
-$("nar").onclick=async()=>{const o=$("narout"),b={lang:LG,baseline:brief(LAST.base),options:LAST.c.map(brief)};o.textContent=t("work");
- try{const r=await fetch("/api/narrate",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(b)});if(!r.ok)throw 0;o.textContent=(await r.json()).text}catch(e){o.textContent=t("off")+"\n"+local()}};
-if("serviceWorker" in navigator)navigator.serviceWorker.register("sw.js");
+function aiStatus(){$("aist").textContent=AI===true?"● Gemma 4 · Google AI":AI===false?t("aiNone"):""}
+fetch("/api/narrate").then(r=>r.json()).then(j=>{AI=!!j.ready;aiStatus()}).catch(()=>{});
+let VO=[];const hasTTS="speechSynthesis"in window,loadV=()=>{VO=speechSynthesis.getVoices()},voice=()=>VO.find(v=>v.lang.toLowerCase().startsWith(LG));if(hasTTS){loadV();speechSynthesis.onvoiceschanged=loadV}
+$("lis").onclick=()=>{speechSynthesis.cancel();const u=new SpeechSynthesisUtterance($("narout").textContent),v=voice();if(v){u.voice=v;u.lang=v.lang}speechSynthesis.speak(u)};
+$("nar").onclick=async()=>{const o=$("narout"),b=$("nar");b.disabled=true;o.textContent=t("work");$("lis").hidden=true;let txt;
+ try{const ac=new AbortController(),to=setTimeout(()=>ac.abort(),25000),r=await fetch("/api/narrate",{method:"POST",headers:{"Content-Type":"application/json"},signal:ac.signal,
+  body:JSON.stringify({lang:LG,baseline:brief(LAST.base),options:LAST.c.map(brief)})});clearTimeout(to);if(!r.ok)throw 0;txt=(await r.json()).text}
+ catch(e){txt=t("local")+":\n"+local()}
+ o.textContent=txt;b.disabled=false;$("lis").hidden=!(hasTTS&&voice())};
+fill("zone",Object.keys(ZONES).map(k=>[k,ZONES[k].name]));
+$("cur").innerHTML=[0,1,2].map(i=>`<select id="e${i}" aria-label="${t("sn")} ${i+1}"></select>`).join("");
+$("pref").innerHTML=`<div class="pf">`+Object.keys(CROPS).map(k=>`<label class="ck"><input type="checkbox" value="${k}"><span data-c="${k}"></span></label>`).join("")+`</div>`;
+$("pr").innerHTML=[["water","pw"],["soil","ps"],["store","pt"],["cash","pc"]].map(a=>`<label for="w_${a[0]}"><span data-k="${a[1]}"></span></label><input type="range" id="w_${a[0]}" min="1" max="5" value="3">`).join("");
+[0,1,2].forEach(i=>$("e"+i).value="sorghum");
+document.addEventListener("input",e=>{if(e.target.id=="tc"){TC=e.target.value;tech()}else if(STEP==3&&TAB==1)render()});
+document.addEventListener("click",e=>{const b=e.target.closest("button");if(!b)return;if(b.dataset.go)go(+b.dataset.go);if(b.dataset.tab)tab(+b.dataset.tab);
+ if(b.dataset.l){LG=b.dataset.l;try{localStorage.setItem("fs-lang",LG)}catch(x){}apply()}});
+if("serviceWorker"in navigator)navigator.serviceWorker.register("sw.js");
 apply();go(1);
 </script></body></html>
