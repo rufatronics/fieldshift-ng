@@ -18,5 +18,9 @@ const CROPS = {
   maize:    {n:"Maize",         fam:"cereal", cyc:105, w:[500,800],  pm:6, heat:3, dry:2, flood:2, rot:4, nfix:0, ero:2},
   cowpea:   {n:"Cowpea",        fam:"legume", cyc:75,  w:[300,500],  pm:7, heat:4, dry:4, flood:1, rot:3, nfix:1, ero:4},
   groundnut:{n:"Groundnut",     fam:"legume", cyc:105, w:[450,650],  pm:6, heat:3, dry:3, flood:1, rot:5, nfix:1, ero:4},
-  rice:     {n:"Rainfed rice",  fam:"cereal", cyc:125, w:[900,1200], pm:6, heat:3, dry:1, flood:5, rot:3, nfix:0, ero:2}
+  rice:     {n:"Rainfed rice",  fam:"cereal", cyc:125, w:[900,1200], pm:6, heat:3, dry:1, flood:5, rot:3, nfix:0, ero:2},
+  sesame:   {n:"Sesame",        fam:"oilseed",cyc:95,  w:[300,500],  pm:6, heat:4, dry:4, flood:1, rot:4, nfix:0, ero:3},
+  soybean:  {n:"Soybean",       fam:"legume", cyc:105, w:[500,750],  pm:6, heat:3, dry:2, flood:2, rot:3, nfix:1, ero:4},
+  onion:    {n:"Onion",         fam:"bulb",    cyc:120, w:[450,700],  pm:7, heat:3, dry:2, flood:1, rot:3, nfix:0, ero:2},
+  tomato:   {n:"Tomato",        fam:"fruit",   cyc:100, w:[400,650],  pm:7, heat:2, dry:2, flood:1, rot:4, nfix:0, ero:2}
 };
