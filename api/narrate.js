@@ -14,7 +14,7 @@ module.exports = async (req, res) => {
   if (!baseline || !Array.isArray(options) || JSON.stringify(req.body).length > 8000)
     return res.status(400).json({ error: "bad request" });
   // Instructions go in the user turn: Gemma models may not accept a separate system instruction.
-  const prompt = `${INSTR}\nWrite in ${lang === "ha" ? "Hausa" : "English"}.\n\nRESULT JSON:\n${JSON.stringify({ baseline, options })}`;
+  const prompt = `${INSTR}\nWrite in ${{ ha: "Hausa", yo: "Yoruba", ig: "Igbo" }[lang] || "English"}.\n\nRESULT JSON:\n${JSON.stringify({ baseline, options })}`;
   const model = process.env.MODEL || "gemma-4-26b-a4b-it";
   try {
     const r = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(model)}:generateContent`, {

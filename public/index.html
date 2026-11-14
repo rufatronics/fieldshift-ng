@@ -1,99 +1,111 @@
 <!doctype html>
-<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>FieldShift NG</title>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#1e5c34"><title>FieldShift NG</title>
 <style>
-:root{--bg:#fbfaf6;--fg:#1d2417;--mut:#667060;--card:#fff;--ln:#dfe3d6;--ac:#2f6b2f;--bad:#b3261e;--warn:#9a6700}
-@media(prefers-color-scheme:dark){:root{--bg:#12170f;--fg:#e8eddf;--mut:#9aa592;--card:#1b2217;--ln:#2d3727;--ac:#7bc47b;--bad:#ff8a80;--warn:#e3b341}}
-*{box-sizing:border-box}body{margin:auto;font:15px/1.45 system-ui,sans-serif;background:var(--bg);color:var(--fg);padding:12px;max-width:760px}
-h1{font-size:20px;margin:4px 0}h2{font-size:15px;margin:14px 0 4px}label{display:block;margin:8px 0 2px;font-size:13px;color:var(--mut)}
-select,input[type=range]{width:100%}select{padding:8px;border-radius:8px;border:1px solid var(--ln);background:var(--card);color:var(--fg)}
-.box,.card{background:var(--card);border:1px solid var(--ln);border-radius:12px;padding:12px;margin:8px 0}
-.banner{border-color:var(--warn);color:var(--warn);font-size:13px}.row{display:flex;gap:8px;flex-wrap:wrap}.row>*{flex:1;min-width:120px}
-.sc{font-size:26px;font-weight:700;color:var(--ac)}.sm{font-size:13px;color:var(--mut)}.bad{color:var(--bad)}.warn{color:var(--warn)}
-.tl{display:grid;grid-template-columns:repeat(12,1fr);gap:2px}.tl div{height:34px;border-radius:4px;font-size:10px;text-align:center;padding-top:10px;color:#000}
-.chips label{display:inline-block;margin:2px 10px 2px 0;color:var(--fg)}ul{margin:4px 0;padding-left:18px}
-.hero{background:linear-gradient(135deg,#2f6b2f,#6aa84f);color:#fff;border-radius:16px;padding:18px;margin:4px 0 8px}.hero h1{font-size:24px;margin:0}.hero div{opacity:.9;font-size:13px}button{background:var(--ac);color:#fff;border:0;border-radius:10px;padding:10px 14px;font:inherit;cursor:pointer}.card{box-shadow:0 2px 10px rgba(0,0,0,.06)}#narout{white-space:pre-wrap;margin-top:8px}</style></head><body>
-<div class="hero"><h1>FieldShift NG</h1><div>NASA Earth data turned into rule-checked crop and rotation decisions</div></div>
-<div class="sm">Rule-checked, scored and explained farm decisions. It supports local expertise and farmer judgment; it does not replace them.</div>
-<div class="box banner" id="ban"></div>
-<div class="box">
- <div class="row"><div><label>Zone</label><select id="zone"></select></div>
- <div><label>Storage</label><select id="store"><option value="ok">Average</option><option value="good">Good (dry, sealed)</option><option value="poor">Poor</option></select></div></div>
- <label><input type="checkbox" id="low"> Plot is low-lying or floods</label>
- <label><input type="checkbox" id="irr"> Irrigation available</label>
- <label>Rainfall scenario: <b id="vr"></b>% (a scenario, not a forecast)</label><input type="range" id="dRain" min="-30" max="20" value="0">
- <label>Warming scenario: +<b id="vt"></b> C</label><input type="range" id="dT" min="0" max="3" step="0.5" value="0">
- <h2>Your priorities (1 low, 5 high)</h2><div id="pr"></div>
- <h2>Crops you prefer or can sell</h2><div class="chips" id="pref"></div>
- <h2>Current rotation (3 seasons)</h2><div class="row"><select id="e0"></select><select id="e1"></select><select id="e2"></select></div>
-</div>
-<h2>Bare-field months</h2><div class="tl" id="tl"></div><div class="sm">Amber = NDVI under 0.2, fields typically bare.</div>
-<h2>Rotations compared</h2><div id="out"></div><div class="box"><div class="row"><button id="nar">Explain in plain words</button><select id="lang"><option value="en">English</option><option value="ha">Hausa</option></select></div><div id="narout" class="sm"></div></div>
-<h2>Single-crop screening</h2><div id="crops"></div>
-<div class="sm" id="meta"></div><script src="data.js"></script><script src="zones.js"></script>
+:root{--bg:#fff;--fg:#14201a;--mut:#4e5d53;--ln:#14201a;--sf:#eef2ec;--ac:#1e5c34;--on:#fff;--good:#1e7a3c;--fair:#a86a00;--weak:#b3261e}
+@media(prefers-color-scheme:dark){:root{--bg:#10150f;--fg:#eef3ea;--mut:#a9b6a8;--ln:#8fa08f;--sf:#1a211a;--ac:#6fcf8a;--on:#10150f;--good:#6fcf8a;--fair:#f0b84a;--weak:#ff8f85}}
+*{box-sizing:border-box;border-radius:0}body{margin:0 auto;max-width:720px;background:var(--bg);color:var(--fg);font:17px/1.5 "Noto Sans","Segoe UI",Roboto,system-ui,sans-serif;padding:0 16px 40px}
+header{border-bottom:3px solid var(--ln);padding:14px 0 12px}h1{font-size:24px;margin:0}header p{margin:2px 0 10px;color:var(--mut)}
+.lg{display:grid;grid-template-columns:repeat(4,1fr);gap:0;border:2px solid var(--ln)}.lg button{background:var(--bg);color:var(--fg);border:0;border-right:2px solid var(--ln);min-height:48px;font:inherit;font-weight:600;cursor:pointer}.lg button:last-child{border-right:0}.lg button[aria-pressed=true]{background:var(--ac);color:var(--on)}
+ol{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;list-style:none;padding:0;margin:14px 0}ol li{border-top:6px solid var(--ln);padding-top:4px;font-size:14px;color:var(--mut)}ol li.on{border-color:var(--ac);color:var(--fg);font-weight:700}
+h2{font-size:18px;margin:22px 0 8px}label{display:block;margin:12px 0 4px;font-weight:600}
+select,input[type=range]{width:100%}select{min-height:48px;padding:8px;border:2px solid var(--ln);background:var(--bg);color:var(--fg);font:inherit}
+.ck{display:flex;gap:12px;align-items:center;min-height:48px;font-weight:400;border:2px solid var(--ln);padding:6px 12px;margin:8px 0}.ck input{width:26px;height:26px;accent-color:var(--ac);flex:none}
+input[type=range]{accent-color:var(--ac);height:32px}.pf{display:grid;grid-template-columns:1fr 1fr}.pf .ck{margin:-2px 0 0 -2px}
+.row{display:grid;gap:8px}.row.r3{grid-template-columns:repeat(3,1fr)}.nav{display:flex;gap:8px;margin-top:20px}
+.btn{flex:1;min-height:52px;background:var(--ac);color:var(--on);border:2px solid var(--ac);font:inherit;font-weight:700;cursor:pointer}.btn.alt{background:var(--bg);color:var(--fg);border-color:var(--ln)}
+:focus-visible{outline:4px solid #e0a100;outline-offset:2px}
+.test{border:2px solid var(--fair);color:var(--fair);padding:8px 12px;font-weight:700;font-size:15px;margin:12px 0}
+.card{border:2px solid var(--ln);border-left-width:12px;padding:12px 14px;margin:14px 0}.card.good{border-left-color:var(--good)}.card.fair{border-left-color:var(--fair)}.card.weak{border-left-color:var(--weak)}
+.ti{font-size:15px;color:var(--mut);font-weight:700}.bd{font-size:22px;font-weight:800}.good .bd{color:var(--good)}.fair .bd{color:var(--fair)}.weak .bd{color:var(--weak)}
+.seq{display:flex;flex-wrap:wrap;align-items:stretch;gap:6px;margin:8px 0}.cr{flex:1;min-width:92px;background:var(--sf);border:2px solid var(--ln);padding:6px 8px}.cr small{display:block;color:var(--mut);font-size:13px}.cr b{font-size:16px}
+.sm{font-size:15px;color:var(--mut)}ul{padding-left:20px;margin:6px 0}li{margin:4px 0}li.x{color:var(--weak);font-weight:600}details{margin-top:8px;border-top:2px solid var(--ln);padding-top:6px}summary{cursor:pointer;font-weight:700;min-height:32px}
+.tl{display:grid;grid-template-columns:repeat(12,1fr);border:2px solid var(--ln)}.tl div{height:40px;text-align:center;padding-top:9px;font-size:13px;font-weight:700;color:#000;border-right:1px solid var(--ln)}.tl div:last-child{border:0}
+#narout{white-space:pre-wrap;margin-top:10px;border-left:6px solid var(--ac);padding-left:10px}.cs div{padding:6px 0;border-bottom:1px solid var(--ln)}
+[hidden]{display:none!important}@media(prefers-reduced-motion:no-preference){section{animation:in .2s}}@keyframes in{from{opacity:.4}}
+</style></head><body>
+<header><h1 data-i="app"></h1><p data-i="tag"></p><div class="lg" id="lg" role="group"></div></header>
+<ol id="st"><li data-i="st1"></li><li data-i="st2"></li><li data-i="st3"></li></ol>
+<section id="s1"><label for="zone" data-i="zone"></label><select id="zone"></select>
+<label class="ck"><input type="checkbox" id="low"><span data-i="low"></span></label><label class="ck"><input type="checkbox" id="irr"><span data-i="irr"></span></label>
+<label for="store" data-i="store"></label><select id="store"><option value="good" data-i="sg"></option><option value="ok" data-i="sa" selected></option><option value="poor" data-i="sp"></option></select>
+<div class="nav"><button class="btn" data-go="2" data-i="next"></button></div></section>
+<section id="s2" hidden><h2 data-i="cur"></h2><div class="row r3" id="cur"></div>
+<h2 data-i="pref"></h2><div id="pref"></div><h2 data-i="pri"></h2><div id="pr"></div>
+<div class="nav"><button class="btn alt" data-go="1" data-i="back"></button><button class="btn" data-go="3" data-i="show"></button></div></section>
+<section id="s3" hidden><div class="test" id="ban"></div>
+<div id="out"></div>
+<h2 data-i="wi"></h2><label for="dRain"><span data-i="rain"></span>: <b id="vr"></b>%</label><input type="range" id="dRain" min="-30" max="20" value="0">
+<label for="dT"><span data-i="heat"></span>: +<b id="vt"></b> C</label><input type="range" id="dT" min="0" max="3" step="0.5" value="0">
+<h2 data-i="bare"></h2><div class="tl" id="tl"></div><div class="sm" data-i="bareN"></div>
+<div class="nav"><button class="btn" id="nar" data-i="explain"></button></div><div id="narout" role="status"></div>
+<h2 data-i="screen"></h2><div class="cs" id="crops"></div><p class="sm" id="meta"></p>
+<div class="nav"><button class="btn alt" data-go="2" data-i="edit"></button></div></section>
+<script src="data.js"></script><script src="zones.js"></script><script src="i18n.js"></script>
 <script>
-const $=i=>document.getElementById(i),sum=a=>a.reduce((x,y)=>x+y,0),cl=(x,a=0,b=100)=>Math.max(a,Math.min(b,x)),N=i=>CROPS[i].n,MO="JFMAMJJASOND";
-const LBL={water:"water fit",heat:"heat tolerance",season:"season length",flood:"flood safety",store:"storage and rot",soil:"soil benefit",market:"market fit"};
-const GAPS=["Crop parameters are unverified placeholders","Soil texture, organic matter and pH not entered","No local market or price data: market score reflects farmer preference only","Zone-level climate, not field-level; satellite and model data, not ground truth"];
+const $=i=>document.getElementById(i),sum=a=>a.reduce((x,y)=>x+y,0),cl=(x,a=0,b=100)=>Math.max(a,Math.min(b,x)),MO="JFMAMJJASOND",MN=["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"],LI=LANGS.map(l=>l[0]);
+let LG="en",LAST,STEP=1;try{LG=localStorage.getItem("fs-lang")||"en"}catch(e){}if(!I18N[LG])LG="en";
+const cn=(l,c)=>{const i=LI.indexOf(l),en=CN[c][0],n=l=="en"?en:CN[c][{ha:1,yo:2,ig:3}[l]];return n==en?en:n+" ("+en+")"};
+const T=(l,k,a=[],c)=>(I18N[l][k]||I18N.en[k]).replace(/\{(\d|c)\}/g,(m,i)=>i=="c"?cn(l,c):a[+i]),t=(k,a)=>T(LG,k,a),N=c=>cn(LG,c);
+const KS=["water","heat","season","flood","store","soil","market"],GK=["g1","g2","g3","g4"];
 function P(){return{zone:$("zone").value,low:$("low").checked,irr:$("irr").checked,store:$("store").value,dRain:+$("dRain").value,dT:+$("dT").value,
  w:{water:+$("w_water").value,soil:+$("w_soil").value,store:+$("w_store").value,cash:+$("w_cash").value},
  pref:[...document.querySelectorAll("#pref input:checked")].map(e=>e.value),cur:[0,1,2].map(i=>$("e"+i).value)}}
-function X(p){const z=ZONES[p.zone];return{z,rain:z.rain.map(r=>r*(1+p.dRain/100)),tmax:z.tmax.map(t=>t+p.dT),season:z.rain.map(r=>r*(1+p.dRain/100)).filter(r=>r>=50).length*30+20}}
+function X(p){const z=ZONES[p.zone],rain=z.rain.map(r=>r*(1+p.dRain/100));return{z,rain,tmax:z.tmax.map(t=>t+p.dT),season:rain.filter(r=>r>=50).length*30+20}}
 const win=c=>[...Array(Math.ceil(c.cyc/30))].map((_,k)=>(c.pm-1+k)%12);
-// RCL-style rules: id, hard ("x" = eliminate) or soft ("p" = penalty), evidence text. Rules decide; nothing here is generated by an LLM.
-function crop(id,p,x){const c=CROPS[id],w=win(c),R=[],S={};
- const rain=sum(w.map(m=>x.rain[m]))+(p.irr?150:0),tpk=Math.max(...w.map(m=>x.tmax[m])),pk=Math.max(...w.map(m=>x.rain[m]));
+// Rules decide; nothing here is generated by an LLM. Rule = {id, k:"x" (eliminate) | "p" (penalty), key (text id), a (numbers)}.
+function crop(id,p,x){const c=CROPS[id],w=win(c),R=[],S={},add=(i,k,key,a=[])=>R.push({id:i,k,key,a,c:id});
+ const rain=sum(w.map(m=>x.rain[m]))+(p.irr?150:0),tpk=Math.max(...w.map(m=>x.tmax[m])),pk=Math.max(...w.map(m=>x.rain[m])),r0=Math.round(rain);
  S.water=cl((rain-c.w[0]*.8)/(c.w[1]-c.w[0]*.8)*100);
- if(rain<c.w[0]*.8)R.push(["R-WATER-01","x",`Season rain ${Math.round(rain)} mm is below ~80% of the minimum need (${c.w[0]} mm)`]);
- else if(S.water<60)R.push(["R-WATER-01","p",`Season rain ${Math.round(rain)} mm vs need ${c.w[0]}-${c.w[1]} mm`]);
- S.season=cl(140-100*c.cyc/x.season);
- if(c.cyc>x.season)R.push(["R-SEASON-02","x",`Cycle of ${c.cyc} days is longer than the ~${x.season}-day rainy season`]);
- const lim=30+2*c.heat;S.heat=cl(100-(tpk-lim)*15);
- if(S.heat<60)R.push(["R-HEAT-03","p",`Peak Tmax ${tpk.toFixed(1)} C vs tolerance ~${lim} C`]);
+ if(rain<c.w[0]*.8)add("R-WATER-01","x","w1x",[r0,c.w[0]]);else if(S.water<60)add("R-WATER-01","p","w1p",[r0,c.w[0],c.w[1]]);
+ S.season=cl(140-100*c.cyc/x.season);if(c.cyc>x.season)add("R-SEASON-02","x","s2",[c.cyc,x.season]);
+ const lim=27+2*c.heat;S.heat=cl(100-(tpk-lim)*15);if(S.heat<60)add("R-HEAT-03","p","h3",[tpk.toFixed(1),lim]);
  const fr=(p.low?1:.25)*cl(pk/3);S.flood=cl(100-fr*(5-c.flood)/4);
- if(p.low&&S.flood<20)R.push(["R-FLOOD-04","x",`Low-lying plot, peak ${Math.round(pk)} mm/month: waterlogging risk too high`]);
- else if(S.flood<60)R.push(["R-FLOOD-04","p","Waterlogging risk on this plot"]);
- const hm=(c.pm-1+Math.ceil(c.cyc/30))%12,hr=x.z.rh[hm];
- S.store=cl(100-cl((hr-45)*2.5)*c.rot/5*({good:.4,ok:.8,poor:1.3}[p.store]));
- if(S.store<60)R.push(["R-STORE-05","p",`Harvest in ${MO[hm]} at ~${hr}% humidity, rot sensitivity ${c.rot}/5`]);
+ if(p.low&&S.flood<20)add("R-FLOOD-04","x","f4x");else if(S.flood<60)add("R-FLOOD-04","p","f4p");
+ const hm=(c.pm-1+Math.ceil(c.cyc/30))%12,hr=x.z.rh[hm];S.store=cl(100-cl((hr-45)*2.5)*c.rot/5*({good:.4,ok:.8,poor:1.3}[p.store]));
+ if(S.store<60)add("R-STORE-05","p","t5",[MN[hm],hr]);
  S.soil=cl(40+30*c.nfix+6*c.ero);S.market=p.pref.includes(id)?100:55;
  const W={water:1+p.w.water,heat:1.5,season:1.5,flood:1.5,store:1+p.w.store,soil:1+p.w.soil,market:.5+p.w.cash*.5};
- const out=R.some(r=>r[1]=="x"),sc=out?0:Object.keys(W).reduce((a,k)=>a+S[k]*W[k],0)/sum(Object.values(W));
- return{id,S,R,out,sc}}
+ const out=R.some(r=>r.k=="x");return{id,S,R,out,sc:out?0:KS.reduce((a,k)=>a+S[k]*W[k],0)/sum(Object.values(W))}}
 function rot(seq,p,x){const cs=seq.map(i=>crop(i,p,x)),notes=[];let s=sum(cs.map(c=>c.sc))/seq.length;
- if(!seq.some(i=>CROPS[i].fam=="legume")){s-=10;notes.push(["R-SEQ-01","No nitrogen-fixing legume in the rotation (-10)"])}
+ if(!seq.some(i=>CROPS[i].fam=="legume")){s-=10;notes.push({id:"R-SEQ-01",key:"q1",a:[]})}
  let rep=0,bon=0;seq.forEach((a,i)=>{const b=seq[(i+1)%seq.length];if(a==b)rep++;else if(CROPS[a].fam!=CROPS[b].fam)bon++});
- if(rep){s-=8*rep;notes.push(["R-SEQ-02",`${rep} back-to-back repeat(s): pest and disease build-up (-${8*rep})`])}
- if(bon){s+=2*bon;notes.push(["R-SEQ-03",`${bon} cereal/legume hand-over(s) break pest cycles (+${2*bon})`])}
- const bad=cs.some(c=>c.out);if(bad)notes.push(["R-GATE","A crop here fails a hard rule, so this rotation cannot be recommended"]);
- return{seq,cs,notes,s:cl(s),bad}}
+ if(rep){s-=8*rep;notes.push({id:"R-SEQ-02",key:"q2",a:[rep]})}if(bon){s+=2*bon;notes.push({id:"R-SEQ-03",key:"q3",a:[bon]})}
+ const bad=cs.some(c=>c.out);if(bad)notes.push({id:"R-GATE",key:"g",a:[]});return{seq,cs,notes,s:cl(s),bad}}
 function cands(p,x){const ok=Object.keys(CROPS).map(i=>crop(i,p,x)).filter(c=>!c.out).sort((a,b)=>b.sc-a.sc).slice(0,5).map(c=>c.id),L=[];
  ok.forEach(a=>ok.forEach(b=>ok.forEach(c=>{if(a!=b&&b!=c&&c!=a)L.push(rot([a,b,c],p,x))})));
  const seen={};return L.sort((a,b)=>b.s-a.s).filter(r=>{const k=[...r.seq].sort().join();return seen[k]?0:seen[k]=1})}
-function why(r){const ks=Object.keys(LBL),avg=k=>sum(r.cs.map(c=>c.S[k]))/r.cs.length,s=[...ks].sort((a,b)=>avg(b)-avg(a));return`Strongest on ${LBL[s[0]]}, weakest on ${LBL[s[6]]}.`}
-function card(r,title){const u=3+2*GAPS.length,rules=r.cs.flatMap(c=>c.R.map(q=>`<li class="${q[1]=="x"?"bad":"warn"}"><b>${q[0]}</b> ${N(c.id)}: ${q[2]}</li>`)).join("")+r.notes.map(n=>`<li><b>${n[0]}</b> ${n[1]}</li>`).join("");
- return`<div class="card"><div class="sm">${title}</div><div class="sc">${Math.round(r.s)} <span class="sm">/100, plausible range ${Math.max(0,Math.round(r.s-u))}-${Math.min(100,Math.round(r.s+u))}</span></div>
- <b>${r.seq.map(N).join(" → ")}</b><div class="sm">${why(r)}</div>
- <h2>Evidence and rule checks</h2><ul>${rules||"<li>No rules triggered.</li>"}</ul>
- <h2>Information gaps</h2><ul>${GAPS.map(g=>`<li>${g}</li>`).join("")}</ul>
- <h2>Needs local review</h2><div class="sm">A farmer or agronomist should confirm crop choice, planting dates and inputs before acting.</div></div>`}
+const rtxt=(l,r)=>r.map(q=>[q.id,T(l,q.key,q.a,q.c),q.k]);
+function facts(l,r){return r.cs.flatMap(c=>rtxt(l,c.R)).concat(rtxt(l,r.notes))}
+function card(r,title){const u=3+2*GK.length,s=Math.round(r.s),b=r.bad?"weak":s>=75?"good":s>=55?"fair":"weak",avg=k=>sum(r.cs.map(c=>c.S[k]))/3,o=[...KS].sort((a,b)=>avg(b)-avg(a)),
+ f=facts(LG,r).map(q=>`<li${q[2]=="x"?' class="x"':""}>${q[1]} <span class="sm">${q[0]}</span></li>`).join("");
+ return`<div class="card ${b}"><div class="ti">${title}</div><div class="bd">${t(b)}</div><div class="seq">${r.seq.map((c,i)=>`<div class="cr"><small>${t("sn")} ${i+1}</small><b>${N(c)}</b></div>`).join("")}</div>
+ <div class="sm">${t("range",[s,Math.max(0,s-u),Math.min(100,s+u)])}<br>${t("strong",[t("k_"+o[0]),t("k_"+o[6])])}</div>
+ <h2>${t("warn")}</h2><ul>${f||"<li>"+t("nowarn")+"</li>"}</ul><details><summary>${t("gaps")}</summary><ul>${GK.map(g=>"<li>"+t(g)+"</li>").join("")}</ul></details><p class="sm"><b>${t("review")}</b></p></div>`}
 function render(){const p=P(),x=X(p);$("vr").textContent=p.dRain;$("vt").textContent=p.dT;
- $("tl").innerHTML=x.z.ndvi.map((v,m)=>`<div style="background:${v<.2?"#d9a441":`hsl(110,45%,${75-v*45}%)`}" title="NDVI ${v}">${MO[m]}</div>`).join("");
- const base=rot(p.cur,p,x),c=cands(p,x);LAST={base,c:c.slice(0,2)};
- $("out").innerHTML=card(base,"Your current rotation (baseline)")+(c.length?c.slice(0,2).map((r,i)=>card(r,"Option "+(i+1))).join(""):`<div class="card bad">No three crops pass the hard rules in this scenario. Review the water, season and flood inputs.</div>`);
- $("crops").innerHTML=`<div class="box">`+Object.keys(CROPS).map(i=>crop(i,p,x)).sort((a,b)=>b.sc-a.sc).map(c=>`<div>${c.out?"✗":"✓"} <b>${N(c.id)}</b> ${Math.round(c.sc)}${c.out?` <span class="bad">${c.R.filter(r=>r[1]=="x").map(r=>r[0]).join(", ")}</span>`:""}</div>`).join("")+`</div>`}
-$("ban").hidden=!PLACEHOLDER;$("meta").textContent=DATA_META?`Climate data: ${DATA_META.repo}, ${DATA_META.zones} zone(s), ${DATA_META.years.join("-")}, rain from ${DATA_META.rainSource}, built ${DATA_META.generated}`:"Climate data: demo placeholders";$("ban").textContent="DEMO CROP VALUES: crop parameters are unverified placeholders. Replace them in data.js with sourced values before presenting any result.";
-$("zone").innerHTML=Object.keys(ZONES).map(k=>`<option value="${k}">${ZONES[k].name}</option>`).join("");
-const opts=Object.keys(CROPS).map(k=>`<option value="${k}">${N(k)}</option>`).join("");
-[0,1,2].forEach(i=>$("e"+i).innerHTML=opts);$("e0").value=$("e1").value=$("e2").value="sorghum";
-$("pr").innerHTML=[["water","Save water"],["soil","Soil health"],["store","Safe storage"],["cash","Cash income"]].map(a=>`<label>${a[1]}</label><input type="range" id="w_${a[0]}" min="1" max="5" value="3">`).join("");
-$("pref").innerHTML=Object.keys(CROPS).map(k=>`<label><input type="checkbox" value="${k}"> ${N(k)}</label>`).join("");
-document.addEventListener("input",render);document.addEventListener("change",render);
-let LAST;
-const brief=r=>({crops:r.seq.map(N),score:Math.round(r.s),checks:r.cs.flatMap(c=>c.R.map(q=>q[0]+" "+N(c.id)+": "+q[2])).concat(r.notes.map(n=>n[0]+" "+n[1])),gaps:GAPS});
-const local=b=>`Current rotation ${b.baseline.crops.join(" → ")} scores ${b.baseline.score}/100.\n`+b.options.map((o,i)=>`Option ${i+1}: ${o.crops.join(" → ")} scores ${o.score}/100.`).join("\n")+"\nChecks: "+[...new Set(b.options.concat(b.baseline).flatMap(o=>o.checks))].slice(0,6).join("; ")+"\nGaps: "+GAPS.join("; ")+".\nA farmer or agronomist must confirm before acting.";
-$("nar").onclick=async()=>{const o=$("narout"),b={lang:$("lang").value,baseline:brief(LAST.base),options:LAST.c.map(brief)};o.textContent="Working...";
- try{const r=await fetch("/api/narrate",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(b)});if(!r.ok)throw 0;o.textContent=(await r.json()).text}
- catch(e){o.textContent=(b.lang=="ha"?"Hausa narration needs a connection; showing English.\n":"")+local(b)}};
+ $("tl").innerHTML=x.z.ndvi.map((v,m)=>`<div style="background:${v<.2?"#f0a13a":`hsl(110,45%,${80-v*45}%)`}" title="${MN[m]} NDVI ${v}">${MO[m]}</div>`).join("");
+ const base=rot(p.cur,p,x),c=cands(p,x);LAST={base,c:c.slice(0,2)};$("narout").textContent="";
+ $("out").innerHTML=card(base,t("now"))+(c.length<2?`<div class="test">${t("none")}</div>`:"")+c.slice(0,2).map(r=>card(r,t("opt"))).join("");
+ $("crops").innerHTML=Object.keys(CROPS).map(i=>crop(i,p,x)).sort((a,b)=>b.sc-a.sc).map(c=>`<div>${c.out?"✗":"✓"} <b>${N(c.id)}</b> ${Math.round(c.sc)}${c.out?` <span class="sm">${c.R.filter(r=>r.k=="x").map(r=>r.id).join(", ")}</span>`:""}</div>`).join("")}
+function fill(id,items){const s=$(id),v=s.value;s.innerHTML=items.map(a=>`<option value="${a[0]}">${a[1]}</option>`).join("");if(v)s.value=v}
+function apply(){document.documentElement.lang=LG;document.querySelectorAll("[data-i]").forEach(e=>e.textContent=t(e.dataset.i));
+ $("lg").innerHTML=LANGS.map(l=>`<button aria-pressed="${l[0]==LG}" data-l="${l[0]}" lang="${l[0]}">${l[1]}</button>`).join("");
+ const cs=Object.keys(CROPS).map(k=>[k,N(k)]);[0,1,2].forEach(i=>fill("e"+i,cs));
+ document.querySelectorAll("#pref span").forEach(e=>e.textContent=N(e.dataset.c));
+ document.querySelectorAll("#pr label span").forEach(e=>e.textContent=t(e.dataset.k));
+ $("ban").hidden=!PLACEHOLDER;$("ban").textContent=t("test");
+ $("meta").textContent=DATA_META?`${DATA_META.repo}, ${DATA_META.zones}, ${[].concat(DATA_META.years||[]).join("-")}, ${DATA_META.rainSource}, ${DATA_META.generated}`:"Demo climate data";
+ if(STEP==3)render()}
+function go(n){STEP=n;[1,2,3].forEach(i=>{$("s"+i).hidden=i!=n;$("st").children[i-1].className=i<=n?"on":""});if(n==3)render();scrollTo(0,0)}
+fill("zone",Object.keys(ZONES).map(k=>[k,ZONES[k].name]));
+$("cur").innerHTML=[0,1,2].map(i=>`<div><select id="e${i}" aria-label="${i+1}"></select></div>`).join("");[0,1,2].forEach(i=>$("e"+i).value="sorghum");
+$("pref").innerHTML=`<div class="pf">`+Object.keys(CROPS).map(k=>`<label class="ck"><input type="checkbox" value="${k}"><span data-c="${k}"></span></label>`).join("")+`</div>`;
+$("pr").innerHTML=[["water","pw"],["soil","ps"],["store","pt"],["cash","pc"]].map(a=>`<label for="w_${a[0]}"><span data-k="${a[1]}"></span></label><input type="range" id="w_${a[0]}" min="1" max="5" value="3">`).join("");
+document.addEventListener("input",()=>STEP==3&&render());
+document.addEventListener("click",e=>{const b=e.target.closest("button");if(!b)return;if(b.dataset.go)go(+b.dataset.go);if(b.dataset.l){LG=b.dataset.l;try{localStorage.setItem("fs-lang",LG)}catch(x){}apply()}});
+const brief=r=>({crops:r.seq.map(c=>CN[c][0]),score:Math.round(r.s),checks:facts("en",r).map(q=>q[0]+" "+q[1]),gaps:GK.map(g=>T("en",g))});
+const local=()=>[LAST.base].concat(LAST.c).map((r,i)=>`${i?t("opt"):t("now")}: ${r.seq.map(N).join(" > ")} = ${Math.round(r.s)}/100`).join("\n")+"\n"+t("review");
+$("nar").onclick=async()=>{const o=$("narout"),b={lang:LG,baseline:brief(LAST.base),options:LAST.c.map(brief)};o.textContent=t("work");
+ try{const r=await fetch("/api/narrate",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(b)});if(!r.ok)throw 0;o.textContent=(await r.json()).text}catch(e){o.textContent=t("off")+"\n"+local()}};
 if("serviceWorker" in navigator)navigator.serviceWorker.register("sw.js");
-render();
+apply();go(1);
 </script></body></html>
