@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>FieldShift NG</title>
+<style>
+:root{--bg:#fbfaf6;--fg:#1d2417;--mut:#667060;--card:#fff;--ln:#dfe3d6;--ac:#2f6b2f;--bad:#b3261e;--warn:#9a6700}
+@media(prefers-color-scheme:dark){:root{--bg:#12170f;--fg:#e8eddf;--mut:#9aa592;--card:#1b2217;--ln:#2d3727;--ac:#7bc47b;--bad:#ff8a80;--warn:#e3b341}}
+*{box-sizing:border-box}body{margin:auto;font:15px/1.45 system-ui,sans-serif;background:var(--bg);color:var(--fg);padding:12px;max-width:760px}
+h1{font-size:20px;margin:4px 0}h2{font-size:15px;margin:14px 0 4px}label{display:block;margin:8px 0 2px;font-size:13px;color:var(--mut)}
+select,input[type=range]{width:100%}select{padding:8px;border-radius:8px;border:1px solid var(--ln);background:var(--card);color:var(--fg)}
+.box,.card{background:var(--card);border:1px solid var(--ln);border-radius:12px;padding:12px;margin:8px 0}
+.banner{border-color:var(--warn);color:var(--warn);font-size:13px}.row{display:flex;gap:8px;flex-wrap:wrap}.row>*{flex:1;min-width:120px}
+.sc{font-size:26px;font-weight:700;color:var(--ac)}.sm{font-size:13px;color:var(--mut)}.bad{color:var(--bad)}.warn{color:var(--warn)}
+.tl{display:grid;grid-template-columns:repeat(12,1fr);gap:2px}.tl div{height:34px;border-radius:4px;font-size:10px;text-align:center;padding-top:10px;color:#000}
+.chips label{display:inline-block;margin:2px 10px 2px 0;color:var(--fg)}ul{margin:4px 0;padding-left:18px}
+.hero{background:linear-gradient(135deg,#2f6b2f,#6aa84f);color:#fff;border-radius:16px;padding:18px;margin:4px 0 8px}.hero h1{font-size:24px;margin:0}.hero div{opacity:.9;font-size:13px}button{background:var(--ac);color:#fff;border:0;border-radius:10px;padding:10px 14px;font:inherit;cursor:pointer}.card{box-shadow:0 2px 10px rgba(0,0,0,.06)}#narout{white-space:pre-wrap;margin-top:8px}</style></head><body>
+<div class="hero"><h1>FieldShift NG</h1><div>NASA Earth data turned into rule-checked crop and rotation decisions</div></div>
+<div class="sm">Rule-checked, scored and explained farm decisions. It supports local expertise and farmer judgment; it does not replace them.</div>
+<div class="box banner" id="ban"></div>
+<div class="box">
+ <div class="row"><div><label>Zone</label><select id="zone"></select></div>
+ <div><label>Storage</label><select id="store"><option value="ok">Average</option><option value="good">Good (dry, sealed)</option><option value="poor">Poor</option></select></div></div>
+ <label><input type="checkbox" id="low"> Plot is low-lying or floods</label>
+ <label><input type="checkbox" id="irr"> Irrigation available</label>
+ <label>Rainfall scenario: <b id="vr"></b>% (a scenario, not a forecast)</label><input type="range" id="dRain" min="-30" max="20" value="0">
+ <label>Warming scenario: +<b id="vt"></b> C</label><input type="range" id="dT" min="0" max="3" step="0.5" value="0">
+ <h2>Your priorities (1 low, 5 high)</h2><div id="pr"></div>
+ <h2>Crops you prefer or can sell</h2><div class="chips" id="pref"></div>
+ <h2>Current rotation (3 seasons)</h2><div class="row"><select id="e0"></select><select id="e1"></select><select id="e2"></select></div>
+</div>
+<h2>Bare-field months</h2><div class="tl" id="tl"></div><div class="sm">Amber = NDVI under 0.2, fields typically bare.</div>
+<h2>Rotations compared</h2><div id="out"></div><div class="box"><div class="row"><button id="nar">Explain in plain words</button><select id="lang"><option value="en">English</option><option value="ha">Hausa</option></select></div><div id="narout" class="sm"></div></div>
+<h2>Single-crop screening</h2><div id="crops"></div>
+<div class="sm" id="meta"></div><script src="data.js"></script><script src="zones.js"></script>
+<script>
+const $=i=>document.getElementById(i),sum=a=>a.reduce((x,y)=>x+y,0),cl=(x,a=0,b=100)=>Math.max(a,Math.min(b,x)),N=i=>CROPS[i].n,MO="JFMAMJJASOND";
+const LBL={water:"water fit",heat:"heat tolerance",season:"season length",flood:"flood safety",store:"storage and rot",soil:"soil benefit",market:"market fit"};
+const GAPS=["Crop parameters are unverified placeholders","Soil texture, organic matter and pH not entered","No local market or price data: market score reflects farmer preference only","Zone-level climate, not field-level; satellite and model data, not ground truth"];
+function P(){return{zone:$("zone").value,low:$("low").checked,irr:$("irr").checked,store:$("store").value,dRain:+$("dRain").value,dT:+$("dT").value,
+ w:{water:+$("w_water").value,soil:+$("w_soil").value,store:+$("w_store").value,cash:+$("w_cash").value},
+ pref:[...document.querySelectorAll("#pref input:checked")].map(e=>e.value),cur:[0,1,2].map(i=>$("e"+i).value)}}
+function X(p){const z=ZONES[p.zone];return{z,rain:z.rain.map(r=>r*(1+p.dRain/100)),tmax:z.tmax.map(t=>t+p.dT),season:z.rain.map(r=>r*(1+p.dRain/100)).filter(r=>r>=50).length*30+20}}
+const win=c=>[...Array(Math.ceil(c.cyc/30))].map((_,k)=>(c.pm-1+k)%12);
+// RCL-style rules: id, hard ("x" = eliminate) or soft ("p" = penalty), evidence text. Rules decide; nothing here is generated by an LLM.
+function crop(id,p,x){const c=CROPS[id],w=win(c),R=[],S={};
+ const rain=sum(w.map(m=>x.rain[m]))+(p.irr?150:0),tpk=Math.max(...w.map(m=>x.tmax[m])),pk=Math.max(...w.map(m=>x.rain[m]));
+ S.water=cl((rain-c.w[0]*.8)/(c.w[1]-c.w[0]*.8)*100);
+ if(rain<c.w[0]*.8)R.push(["R-WATER-01","x",`Season rain ${Math.round(rain)} mm is below ~80% of the minimum need (${c.w[0]} mm)`]);
+ else if(S.water<60)R.push(["R-WATER-01","p",`Season rain ${Math.round(rain)} mm vs need ${c.w[0]}-${c.w[1]} mm`]);
+ S.season=cl(140-100*c.cyc/x.season);
+ if(c.cyc>x.season)R.push(["R-SEASON-02","x",`Cycle of ${c.cyc} days is longer than the ~${x.season}-day rainy season`]);
+ const lim=30+2*c.heat;S.heat=cl(100-(tpk-lim)*15);
+ if(S.heat<60)R.push(["R-HEAT-03","p",`Peak Tmax ${tpk.toFixed(1)} C vs tolerance ~${lim} C`]);
+ const fr=(p.low?1:.25)*cl(pk/3);S.flood=cl(100-fr*(5-c.flood)/4);
+ if(p.low&&S.flood<20)R.push(["R-FLOOD-04","x",`Low-lying plot, peak ${Math.round(pk)} mm/month: waterlogging risk too high`]);
+ else if(S.flood<60)R.push(["R-FLOOD-04","p","Waterlogging risk on this plot"]);
+ const hm=(c.pm-1+Math.ceil(c.cyc/30))%12,hr=x.z.rh[hm];
+ S.store=cl(100-cl((hr-45)*2.5)*c.rot/5*({good:.4,ok:.8,poor:1.3}[p.store]));
+ if(S.store<60)R.push(["R-STORE-05","p",`Harvest in ${MO[hm]} at ~${hr}% humidity, rot sensitivity ${c.rot}/5`]);
+ S.soil=cl(40+30*c.nfix+6*c.ero);S.market=p.pref.includes(id)?100:55;
+ const W={water:1+p.w.water,heat:1.5,season:1.5,flood:1.5,store:1+p.w.store,soil:1+p.w.soil,market:.5+p.w.cash*.5};
+ const out=R.some(r=>r[1]=="x"),sc=out?0:Object.keys(W).reduce((a,k)=>a+S[k]*W[k],0)/sum(Object.values(W));
+ return{id,S,R,out,sc}}
+function rot(seq,p,x){const cs=seq.map(i=>crop(i,p,x)),notes=[];let s=sum(cs.map(c=>c.sc))/seq.length;
+ if(!seq.some(i=>CROPS[i].fam=="legume")){s-=10;notes.push(["R-SEQ-01","No nitrogen-fixing legume in the rotation (-10)"])}
+ let rep=0,bon=0;seq.forEach((a,i)=>{const b=seq[(i+1)%seq.length];if(a==b)rep++;else if(CROPS[a].fam!=CROPS[b].fam)bon++});
+ if(rep){s-=8*rep;notes.push(["R-SEQ-02",`${rep} back-to-back repeat(s): pest and disease build-up (-${8*rep})`])}
+ if(bon){s+=2*bon;notes.push(["R-SEQ-03",`${bon} cereal/legume hand-over(s) break pest cycles (+${2*bon})`])}
+ const bad=cs.some(c=>c.out);if(bad)notes.push(["R-GATE","A crop here fails a hard rule, so this rotation cannot be recommended"]);
+ return{seq,cs,notes,s:cl(s),bad}}
+function cands(p,x){const ok=Object.keys(CROPS).map(i=>crop(i,p,x)).filter(c=>!c.out).sort((a,b)=>b.sc-a.sc).slice(0,5).map(c=>c.id),L=[];
+ ok.forEach(a=>ok.forEach(b=>ok.forEach(c=>{if(a!=b&&b!=c&&c!=a)L.push(rot([a,b,c],p,x))})));
+ const seen={};return L.sort((a,b)=>b.s-a.s).filter(r=>{const k=[...r.seq].sort().join();return seen[k]?0:seen[k]=1})}
+function why(r){const ks=Object.keys(LBL),avg=k=>sum(r.cs.map(c=>c.S[k]))/r.cs.length,s=[...ks].sort((a,b)=>avg(b)-avg(a));return`Strongest on ${LBL[s[0]]}, weakest on ${LBL[s[6]]}.`}
+function card(r,title){const u=3+2*GAPS.length,rules=r.cs.flatMap(c=>c.R.map(q=>`<li class="${q[1]=="x"?"bad":"warn"}"><b>${q[0]}</b> ${N(c.id)}: ${q[2]}</li>`)).join("")+r.notes.map(n=>`<li><b>${n[0]}</b> ${n[1]}</li>`).join("");
+ return`<div class="card"><div class="sm">${title}</div><div class="sc">${Math.round(r.s)} <span class="sm">/100, plausible range ${Math.max(0,Math.round(r.s-u))}-${Math.min(100,Math.round(r.s+u))}</span></div>
+ <b>${r.seq.map(N).join(" → ")}</b><div class="sm">${why(r)}</div>
+ <h2>Evidence and rule checks</h2><ul>${rules||"<li>No rules triggered.</li>"}</ul>
+ <h2>Information gaps</h2><ul>${GAPS.map(g=>`<li>${g}</li>`).join("")}</ul>
+ <h2>Needs local review</h2><div class="sm">A farmer or agronomist should confirm crop choice, planting dates and inputs before acting.</div></div>`}
+function render(){const p=P(),x=X(p);$("vr").textContent=p.dRain;$("vt").textContent=p.dT;
+ $("tl").innerHTML=x.z.ndvi.map((v,m)=>`<div style="background:${v<.2?"#d9a441":`hsl(110,45%,${75-v*45}%)`}" title="NDVI ${v}">${MO[m]}</div>`).join("");
+ const base=rot(p.cur,p,x),c=cands(p,x);LAST={base,c:c.slice(0,2)};
+ $("out").innerHTML=card(base,"Your current rotation (baseline)")+(c.length?c.slice(0,2).map((r,i)=>card(r,"Option "+(i+1))).join(""):`<div class="card bad">No three crops pass the hard rules in this scenario. Review the water, season and flood inputs.</div>`);
+ $("crops").innerHTML=`<div class="box">`+Object.keys(CROPS).map(i=>crop(i,p,x)).sort((a,b)=>b.sc-a.sc).map(c=>`<div>${c.out?"✗":"✓"} <b>${N(c.id)}</b> ${Math.round(c.sc)}${c.out?` <span class="bad">${c.R.filter(r=>r[1]=="x").map(r=>r[0]).join(", ")}</span>`:""}</div>`).join("")+`</div>`}
+$("ban").hidden=!PLACEHOLDER;$("meta").textContent=DATA_META?`Climate data: ${DATA_META.repo}, ${DATA_META.zones} zone(s), ${DATA_META.years.join("-")}, rain from ${DATA_META.rainSource}, built ${DATA_META.generated}`:"Climate data: demo placeholders";$("ban").textContent="DEMO CROP VALUES: crop parameters are unverified placeholders. Replace them in data.js with sourced values before presenting any result.";
+$("zone").innerHTML=Object.keys(ZONES).map(k=>`<option value="${k}">${ZONES[k].name}</option>`).join("");
+const opts=Object.keys(CROPS).map(k=>`<option value="${k}">${N(k)}</option>`).join("");
+[0,1,2].forEach(i=>$("e"+i).innerHTML=opts);$("e0").value=$("e1").value=$("e2").value="sorghum";
+$("pr").innerHTML=[["water","Save water"],["soil","Soil health"],["store","Safe storage"],["cash","Cash income"]].map(a=>`<label>${a[1]}</label><input type="range" id="w_${a[0]}" min="1" max="5" value="3">`).join("");
+$("pref").innerHTML=Object.keys(CROPS).map(k=>`<label><input type="checkbox" value="${k}"> ${N(k)}</label>`).join("");
+document.addEventListener("input",render);document.addEventListener("change",render);
+let LAST;
+const brief=r=>({crops:r.seq.map(N),score:Math.round(r.s),checks:r.cs.flatMap(c=>c.R.map(q=>q[0]+" "+N(c.id)+": "+q[2])).concat(r.notes.map(n=>n[0]+" "+n[1])),gaps:GAPS});
+const local=b=>`Current rotation ${b.baseline.crops.join(" → ")} scores ${b.baseline.score}/100.\n`+b.options.map((o,i)=>`Option ${i+1}: ${o.crops.join(" → ")} scores ${o.score}/100.`).join("\n")+"\nChecks: "+[...new Set(b.options.concat(b.baseline).flatMap(o=>o.checks))].slice(0,6).join("; ")+"\nGaps: "+GAPS.join("; ")+".\nA farmer or agronomist must confirm before acting.";
+$("nar").onclick=async()=>{const o=$("narout"),b={lang:$("lang").value,baseline:brief(LAST.base),options:LAST.c.map(brief)};o.textContent="Working...";
+ try{const r=await fetch("/api/narrate",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(b)});if(!r.ok)throw 0;o.textContent=(await r.json()).text}
+ catch(e){o.textContent=(b.lang=="ha"?"Hausa narration needs a connection; showing English.\n":"")+local(b)}};
+if("serviceWorker" in navigator)navigator.serviceWorker.register("sw.js");
+render();
+</script></body></html>
