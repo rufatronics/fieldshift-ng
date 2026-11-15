@@ -1,52 +1,109 @@
-# FieldShift NG — Agent Handoff Context
+# FieldShift NG — Complete Agent Handoff
 
-## Purpose
+**Purpose:** Give any future coding agent enough context to continue FieldShift NG safely without reconstructing the project history.
 
-FieldShift NG is an offline-capable farm decision-support web app for smallholder farmers in northern Nigeria. The app helps a farmer compare three-season crop rotations using climate-zone inputs, crop constraints, storage conditions, irrigation, flooding risk, preferences, and deterministic agronomic rules.
+**Last updated:** 2026-11-15
 
-The core product principle is:
+## Read this first
 
-> Rules and the scoring engine decide. AI explains the result and answers questions about the supplied result; AI must not override gates, scores, or safety rules.
+FieldShift NG is an offline-capable farm decision-support web app for smallholder farmers in northern Nigeria. It helps a farmer compare three-season crop rotations using climate-zone inputs, crop constraints, storage conditions, irrigation, flooding risk, preferences, and deterministic agronomic rules.
 
-The original project name is **FieldShift NG** and should not be renamed.
+The non-negotiable product principle is:
+
+> Rules and the scoring engine decide. AI and forecasting explain or provide advisory signals only.
+
+Do not let any AI, time-series model, or hosted provider modify scores, remove gates, invent agronomic facts, override safety rules, or silently collect location data.
+
+The original project name is **FieldShift NG**. Do not rename it unless the owner explicitly asks.
 
 ## Repository and production
 
-- GitHub repository: `rufatronics/fieldshift-ng`
-- Main branch: `main`
-- Production URL: `https://fieldshift-ng.vercel.app`
-- Deployment platform: Vercel
-- Framework: static/vanilla HTML, CSS, and JavaScript with one Vercel serverless API function
+- GitHub: `rufatronics/fieldshift-ng`
+- Branch: `main`
+- Current latest commit: `312e20b` (`Add complete project handoff`)
+- Production: `https://fieldshift-ng.vercel.app`
+- Vercel project: `rufatronics-projects/fieldshift-ng`
+- Framework: static/vanilla HTML, CSS, and JavaScript plus Vercel serverless functions
 - Node runtime: `22.x`
 - Build command: `node tools/build-data.mjs`
 - Output directory: `public`
-- API function: `api/narrate.js`
-- Vercel project files: `vercel.json`, `.vercel/project.json`
+- Vercel config: `vercel.json`
+- Current repository is expected to be clean after checkout.
 
-The current repository is clean after deployment. Do not commit `.env.local`, Vercel tokens, Google keys, Hugging Face tokens, GitHub tokens, or other credentials.
+Never commit `.env.local`, API keys, GitHub tokens, Vercel tokens, Hugging Face tokens, Google keys, model checkpoints, or private worker credentials.
 
-## Current feature set
+## Current file map
 
-### Farmer experience
+- `public/index.html`: main planner, deterministic engine, technical view, multilingual UI, AI calls, forecast card, and browser wiring.
+- `public/lite.html`: ultra-lite Nokia/KaiOS-style planner for slow connections and small screens.
+- `public/data.js`: demo zones and crop catalog; currently `PLACEHOLDER = true`.
+- `public/zones.js`: generated or checked-in zone climate data.
+- `public/i18n.js`: English, Hausa, Yoruba, and Igbo draft UI strings.
+- `public/sw.js`: service worker; current cache is `fsng-v6`.
+- `api/narrate.js`: Gemini/Hugging Face explanation and farmer Q&A API.
+- `api/forecast.js`: forecast API with optional worker proxy and local seasonal-naive fallback.
+- `forecast/lag_llama_worker.py`: optional Python Lag-Llama-compatible advisory worker scaffold.
+- `forecast/requirements.txt`: Python worker dependencies.
+- `tools/build-data.mjs`: private data build step; public output contains climate averages only.
+- `tools/replay-case.mjs`: reproducible Kano cutoff/stress replay harness.
+- `examples/2020-kano-cutoff-paper.md`: case-study paper and judge/demo script.
+- `examples/2020-kano-cutoff-replay.json`: complete machine-readable scenario.
+- `README.md`: user/developer setup, forecast docs, deployment, tests, and limitations.
+- `HANDOFF.md`: broad project handoff.
+- `AGENT.md`: this agent-specific continuation handoff.
+- `.gitignore`: ignores environment files and local secrets.
 
-The current page has a guided advisor flow:
+## Farmer experience
 
-1. The farmer selects a language.
-2. The advisor asks for a coarse zone, flood exposure, irrigation, storage quality, previous crops, and crops that sell easily.
-3. The deterministic engine calculates the current rotation and safe alternatives.
-4. The plan view shows scores, warnings, climate chart, options, and what-if controls.
-5. The farmer can ask questions through the in-plan Q&A chat.
-6. The farmer can open the **Ask FieldShift** button in the top navigation and use the top AI chat panel.
+The main flow is:
 
-The top AI panel now contains a visible input, a Send button, and an answer area. It uses the same full plan context as the in-plan chat after the farmer completes the guided plan. If no plan exists, it clearly tells the farmer to start the season plan first.
+1. Farmer selects English, Hausa, Yoruba, or Igbo.
+2. Farmer selects a coarse zone: Kano, Katsina, or Sokoto. Optional device geolocation only chooses the nearest coarse zone; exact coordinates are not uploaded or stored.
+3. Advisor asks flood exposure, irrigation, and storage questions.
+4. Farmer selects three previous crops.
+5. Farmer selects crops that sell easily.
+6. Deterministic engine calculates the current rotation and safe alternatives.
+7. Plan view shows scores, warnings, climate chart, alternatives, and what-if controls.
+8. Farmer can ask in-plan questions or use the top Ask FieldShift panel.
+9. Experimental rainfall forecast card displays point/uncertainty values as advisory context only.
 
-### Languages
+Offline behavior:
 
-The UI supports English, Hausa, Yoruba, and Igbo. The Hausa, Yoruba, and Igbo text is draft content and should be reviewed by native speakers before formal release.
+- Deterministic planning works offline after static assets are cached.
+- AI chat requires network access.
+- Forecast API uses a fallback when the optional model worker is not configured.
+- If the network fails, the plan remains available and the UI should explain the limitation.
 
-### Crops
+Lite mode is at `/lite.html`. It has fewer rules, no charts/images/external fonts/framework, and can send a small text-only AI question through `XMLHttpRequest` when online. The full app remains authoritative.
 
-The crop catalog currently includes:
+## Deterministic decision engine
+
+The engine is embedded in `public/index.html` and reads `public/data.js` and `public/zones.js`.
+
+Core functions:
+
+- `X(p)`: applies what-if rainfall and temperature changes to the selected zone.
+- `crop(id, p, x)`: scores a crop across water, heat, season, flood, storage, soil, and market factors.
+- `rot(seq, p, x)`: scores a three-crop rotation and applies sequence bonuses/penalties.
+- `cands(p, x)`: creates and ranks safe candidate rotations.
+- `calc()`: calculates the current plan and top alternatives.
+- `screen()`: constructs the full AI context.
+
+Rules:
+
+- `R-WATER-01`: seasonal water requirement gate/penalty.
+- `R-SEASON-02`: cycle length versus rainy-season length.
+- `R-HEAT-03`: heat tolerance penalty.
+- `R-FLOOD-04`: low-plot flooding gate/penalty.
+- `R-STORE-05`: harvest humidity, storage quality, and rot sensitivity.
+- `R-SEQ-01`: no-legume penalty.
+- `R-SEQ-02`: repeated-crop penalty.
+- `R-SEQ-03`: grain/legume or family-switch bonus.
+- `R-GATE`: rotation contains a crop that failed a gate.
+
+The engine is the source of truth. Any future model integration must consume its results, not replace them.
+
+## Current crop catalog
 
 - Pearl millet
 - Sorghum
@@ -59,196 +116,240 @@ The crop catalog currently includes:
 - Onion
 - Tomato
 
-Crop parameters are still marked as placeholders with `PLACEHOLDER = true` in `public/data.js`. Do not present the values as validated agronomic recommendations until they are sourced and reviewed by an agronomist or appropriate agricultural institution.
-
-### Ultra Lite mode
-
-`public/lite.html` is the low-resource version inside the same deployment at `https://fieldshift-ng.vercel.app/lite.html`. It uses one small HTML file, inline CSS, old-style JavaScript, no charts, no images, no external fonts, no tracking, and no framework. It is intended for older Nokia/KaiOS-style browsers, Opera Mini-like environments, slow connections, and very small screens.
-
-Lite mode provides a short form for zone, rain, flooding, irrigation, and last crop. It produces a quick local plan and can send a small text-only question to `/api/narrate` through `XMLHttpRequest` when a network connection exists. The full app remains the authoritative detailed planner; Lite mode clearly labels itself as a quick screen with fewer rules. The main app links to Lite mode as `/lite.html`.
-
-### Optional location
-
-The landing flow includes an opt-in approximate-location button. It uses browser geolocation only to select the nearest coarse zone among Kano, Katsina, and Sokoto. Exact coordinates are not uploaded or stored. If permission is denied, the farmer can select a zone manually.
-
-## Decision engine
-
-The engine is in `public/index.html` and uses data from `public/data.js` and generated zone data in `public/zones.js`.
-
-Important functions:
-
-- `X(p)`: applies what-if rain and temperature changes to zone climate.
-- `crop(id, p, x)`: scores one crop across water, heat, season, flood, storage, soil, and market factors; it applies gate and penalty rules.
-- `rot(seq, p, x)`: scores a three-crop rotation and applies sequence bonuses/penalties.
-- `cands(p, x)`: generates and ranks safe candidate rotations.
-- `calc()`: calculates the current plan and top alternatives.
-- `screen()`: builds the complete AI context payload.
-
-Rules currently include:
-
-- `R-WATER-01`: seasonal water requirement gate/penalty
-- `R-SEASON-02`: cycle length versus rainy season
-- `R-HEAT-03`: heat tolerance penalty
-- `R-FLOOD-04`: low-plot flooding gate/penalty
-- `R-STORE-05`: harvest humidity, storage quality, and rot sensitivity
-- `R-SEQ-01`: no legume penalty
-- `R-SEQ-02`: repeated crop penalty
-- `R-SEQ-03`: grain/legume switch bonus
-- `R-GATE`: rotation contains a crop that failed a gate
-
-The engine must remain the source of truth. Any future AI prompt must preserve that boundary.
-
-## Full AI context pipeline
-
-The AI request is sent from `callAI(q)` in `public/index.html` to `/api/narrate`.
-
-The payload includes:
-
-- `lang`
-- `q`, the farmer’s question
-- `baseline`, a brief current-rotation summary
-- `options`, brief alternative summaries
-- `screen`, the full decision context
-
-The `screen` object now includes:
-
-- Farmer inputs: zone, low plot, irrigation, storage, previous rotation, preferences, weights, and what-if changes
-- Climate: season length, monthly rainfall, monthly temperatures, and monthly humidity
-- Current rotation: sequence, score, and rotation rule evidence
-- Explicit `comparison.current` and `comparison.options` objects
-- For every crop: total score, all factor scores, factor weights, requirements/tolerances, observed metrics, rule evidence, and removed gate IDs
-
-The explicit comparison object was added because summary-only prompts caused answers like “Option 1 scores higher, but the JSON does not explain why.” The prompt now requires at least two concrete factor differences whenever the context contains them.
+All crop parameters are placeholders until sourced and reviewed by an agronomist or appropriate agricultural institution. Never present them as validated recommendations while `PLACEHOLDER = true`.
 
 ## AI backend
 
-The backend is `api/narrate.js`.
+`api/narrate.js` supports:
 
-Provider order:
+- `GET /api/narrate`: readiness and configured-provider status.
+- `POST /api/narrate`: explanation or one short farmer question.
+- Best-effort eight-request-per-minute rate limiting per IP.
+- Input size and question length validation.
+- Google Gemini first, Hugging Face fallback.
+- Safe errors without returning secret values.
 
-1. Google AI Studio / Gemini via `GEMINI_API_KEY`
-2. Hugging Face router via `HF_TOKEN`
+Environment names used by production:
 
-Gemini model fallback order:
+- `GEMINI_API_KEY`
+- `HF_TOKEN`
+- Optional `MODEL`
+- Optional `HF_MODEL`
+- Optional `HF_REPO`
 
-1. `MODEL`, if configured
-2. `gemini-2.5-flash`
-3. `gemini-2.0-flash`
-4. `gemini-1.5-flash`
+The prompt instructs AI to use only the supplied decision JSON, compare concrete factors, cite rule IDs when present, mention information gaps, and tell the farmer to confirm with an agronomist. Do not weaken this boundary.
 
-The backend supports:
+## Forecast MVP
 
-- `GET /api/narrate`: readiness and configured-provider status
-- `POST /api/narrate`: explanation or farmer Q&A
-- Rate limiting: best-effort eight requests per minute per IP
-- Input size and question-length validation
-- Provider fallback
-- Safe errors without returning secret values
+The forecast is intentionally separate from crop scoring.
 
-The AI prompt says to use only the JSON decision context, compare factors, cite rule IDs when present, mention information gaps, and tell the farmer to confirm with an agronomist before acting.
+### API
 
-## Production AI configuration
+`POST /api/forecast` accepts a numeric series and returns point, low, and high forecast values:
 
-Production environment variable names are:
+```json
+{
+  "values": [0, 0, 2, 12, 70, 120, 200, 290, 150, 25, 0, 0],
+  "horizon": 3,
+  "frequency": "monthly",
+  "target": "rainfall"
+}
+```
 
-- `GEMINI_API_KEY`: Google AI Studio key
-- `HF_TOKEN`: Hugging Face token
-- Optional `MODEL`: Gemini model override
-- Optional `HF_MODEL`: Hugging Face model override
-- Optional `HF_REPO`: data repository used by the build step
+When `FORECAST_WORKER_URL` is absent or unavailable, it returns:
 
-Never put values for these variables in this file, GitHub, frontend JavaScript, or chat replies.
+- `model: "seasonal-naive"`
+- `advisoryOnly: true`
+- `fallback: true`
+- forecast records with `period`, `point`, `low`, and `high`
+- a note that deterministic FieldShift rules remain authoritative
 
-A replacement Google key was installed during the latest repair and tested successfully. A real farmer question returned HTTP 200 through Google. If chat breaks again, check `/api/narrate` and then test a short POST request. Google API keys must belong to a project where the Generative Language API is enabled.
+The browser forecast card is labeled experimental and advisory. It must not change plan scores or gates.
 
-The Hugging Face fallback is configured but may require a provider/model with available credits. Do not assume every Hugging Face model is available through the router.
+### Optional Lag-Llama worker
 
-## Generated climate data
+`forecast/lag_llama_worker.py` is a Python/FastAPI worker scaffold. It loads a Lag-Llama checkpoint lazily and returns probabilistic forecast bands. It is not bundled into the browser and should be private/authenticated.
 
-`tools/build-data.mjs` builds `public/zones.js` from the configured data repository when available. The latest build generated three zones using POWER climate data for 2005–2025.
+Typical setup:
 
-If the build cannot access the data repository, it falls back to the demo data already in `public/data.js`/`public/zones.js`. The build output reports either:
+```bash
+python3 -m venv .venv
+. .venv/bin/activate
+pip install -r forecast/requirements.txt
+export LAG_LLAMA_CHECKPOINT=/path/to/lag-llama.ckpt
+uvicorn forecast.lag_llama_worker:app --host 0.0.0.0 --port 8000
+```
 
-- `[fieldshift] wrote 3 zone(s) ...`
+Then configure Vercel `FORECAST_WORKER_URL` to a private HTTPS worker endpoint. Do not expose credentials in frontend code.
+
+The worker is not yet a validated northern-Nigeria weather model. It requires rolling-origin evaluation, uncertainty calibration, data-quality checks, and device/latency testing before any production claim.
+
+## Time-series model research learned from the comparison
+
+The model comparison examined Google TimesFM 2.5, Amazon Chronos-2, Salesforce Moirai 2.0, IBM Granite TTM/TinyTimeMixer, Lag-Llama, and Nixtla TimeGPT.
+
+### Ranked recommendation for FieldShift
+
+1. **IBM Granite TTM** — strongest longer-term local-worker architecture. Compact family, CPU/laptop-oriented path, zero-shot support, multivariate capability, and Apache licensing. Main caveats: history requirements, checkpoint/frequency/horizon matching, and no proof of zero-shot exogenous-weather support for this use case.
+2. **Lag-Llama** — best lightweight local fallback for one carefully defined target series. Approximately 2.45M parameters and a roughly 29.5 MB checkpoint according to its official materials; probabilistic output and Apache licensing. It is univariate and autoregressive, not a general multivariate weather model.
+3. **Amazon Chronos-2** — strongest connected demo candidate because it supports multivariate series and past/known-future covariates with quantiles. It is a Python/cloud dependency and has no official low-end browser/offline path.
+4. **Google TimesFM 2.5** — strong zero-shot univariate/online option with quantiles, long context, and an official managed BigQuery route. Through 2.5 it is fundamentally univariate; XReg is not native joint multivariate forecasting. Not suitable for a low-end browser bundle without proof.
+5. **Nixtla TimeGPT** — convenient connected API with intervals, exogenous variables, and current multivariate claims. Proprietary, remote, key-protected, and not an offline-first path.
+6. **Salesforce Moirai 2.0 Small** — small and probabilistic but lacks covariates/cross-variate forecasting, uses a research-oriented CC BY-NC-4.0 checkpoint, and is less suitable for commercial/offline FieldShift.
+
+### Architecture conclusion
+
+Use a two-layer system:
+
+- Layer 1: deterministic FieldShift rules remain the only decision authority.
+- Layer 2: an optional replaceable worker provides climate/sensor forecasts, quantiles, freshness, provenance, and quality status.
+
+For a one- or two-day hackathon, do not attempt fine-tuning, causal weather modeling, full offline browser inference, or production accuracy claims. Use one target series, a short horizon, a simple baseline, cached results, uncertainty display, and a clear offline fallback.
+
+### Common research warnings
+
+- No candidate has authoritative validation on northern Nigerian farms or stations.
+- Generic foundation-model benchmarks are not local agronomic evidence.
+- Zero-shot does not remove the need for backtesting and calibration.
+- Browser/WebAssembly/offline support must never be assumed from parameter count.
+- Forecasts do not supply causal agronomic advice.
+- Future covariates must actually be available for covariate-aware forecasting.
+- A plausible forecast must not override water, flood, heat, storage, or safety gates.
+
+## Reproducible Kano 2020 scenario
+
+The scenario is deliberately honest and is saved in GitHub.
+
+Farmer profile:
+
+- Cutoff: 2020 planting decision.
+- Zone: Kano.
+- Low plot: yes.
+- Irrigation: no.
+- Storage: poor.
+- Previous rotation: maize → maize → groundnut.
+- Market preferences: cowpea, pearl millet, sesame.
+- Weights: water 4, soil 4, storage 4, cash 3.
+
+The repository has zone climatology, not annual 2020 observations. Therefore `tools/replay-case.mjs` applies a transparent 30% reduction to June–September rainfall as a drought-stress perturbation. It is not proof of exactly what happened in 2020.
+
+Replay result:
+
+- Current drought-stress plan: **65/100**.
+- Top alternative: **Pearl millet → Cowpea → Sesame — 89/100**.
+- Difference: **24 points**.
+- Current plan receives `R-WATER-01` and `R-FLOOD-04` penalties.
+- Alternative uses lower-water crops, includes a legume, matches preferences, and avoids gates; pearl millet still receives a storage penalty.
+- A heavier flood perturbation drops the tested alternative to **6/100** and triggers `R-GATE`.
+
+Run:
+
+```bash
+node tools/replay-case.mjs
+```
+
+Outputs:
+
+- `examples/2020-kano-cutoff-replay.json`
+- console summary of current and top alternative scores
+
+Safe hackathon wording:
+
+> “If this farmer had entered these conditions before planting, FieldShift would have flagged the maize-heavy plan and offered a safer candidate under the tested drought stress.”
+
+Never claim actual yield, income, or farmer impact without verified annual data and outcomes.
+
+## Data pipeline
+
+`tools/build-data.mjs` pulls private harmonized climate data when `HF_TOKEN` and the configured repository are available. It writes public zone averages to `public/zones.js`. If access fails, it keeps the checked-in demo zone data.
+
+Expected build messages:
+
+- `[fieldshift] wrote N zone(s) ...`
 - `[fieldshift] using demo zones.js ...`
 
-Never include tokens in generated public files. Zone climate averages are public by design; secrets are not.
+Never put tokens in generated public files. Zone climate averages are public by design.
 
 ## Service worker and offline behavior
 
-The service worker is `public/sw.js`. It caches the static application so the deterministic plan can run offline. AI chat requires network access. When AI is unavailable, the UI must retain a local summary and explain the provider failure clearly.
+`public/sw.js` currently uses cache name `fsng-v6` and caches the static application. Bump this cache name after meaningful frontend asset changes so phones do not retain stale files.
 
-After meaningful frontend changes, consider bumping the service-worker cache name in `public/sw.js` so phones do not keep stale assets.
+AI is network-only. The deterministic plan is offline. Forecast display must remain advisory and must degrade gracefully.
 
-## Deployment workflow
+## Tests already run
 
-From the project directory:
+These checks passed after the latest changes:
 
 ```bash
 npm run build
+node --check api/forecast.js
+node --check api/narrate.js
+node --check tools/build-data.mjs
+node --check tools/replay-case.mjs
 git diff --check
+```
+
+A direct forecast fallback smoke test returned three records with `model: "seasonal-naive"`, `advisoryOnly: true`, and `fallback: true`.
+
+The replay generated:
+
+```text
+Drought stress current: 65/100 (Maize → Maize → Groundnut)
+Drought stress top option: 89/100 (Pearl millet → Cowpea → Sesame)
+```
+
+## Development and deployment commands
+
+```bash
+npm run build
+node --check api/narrate.js
+node --check api/forecast.js
+node --check tools/build-data.mjs
+node --check tools/replay-case.mjs
+git diff --check
+```
+
+Deployment:
+
+```bash
 git add <changed-files>
 git commit -m "Describe the change"
 git push origin main
 npx vercel@latest --prod --yes --token "$VERCEL_TOKEN"
 ```
 
-Smoke tests:
+Production smoke tests:
 
 ```bash
 curl -fsSL https://fieldshift-ng.vercel.app/
 curl -sS https://fieldshift-ng.vercel.app/api/narrate
+curl -sS -X POST https://fieldshift-ng.vercel.app/api/forecast \
+  -H 'content-type: application/json' \
+  -d '{"values":[0,0,2,12,70,120,200,290,150,25,0,0],"horizon":3}'
 ```
 
-A minimal real-Q&A test should include `lang`, `q`, `baseline`, `options`, and `screen`, and must be checked for HTTP 200 and a non-empty `text` field.
+## Security status
 
-For local syntax checks:
+Credentials were exposed during setup and should be revoked and regenerated:
 
-```bash
-node --check api/narrate.js
-node --check tools/build-data.mjs
-npm run build
-git diff --check
-```
+- GitHub token
+- Vercel token
+- Hugging Face token
+- Any Google AI key pasted during setup
 
-To check inline browser JavaScript, extract `<script>...</script>` from `public/index.html` to a temporary file and run `node --check` on it.
+Do not include replacement values in this file or chat. Use connector-managed secrets, GitHub settings, or Vercel environment settings.
 
-## Change history
+The Vercel CLI temporarily downloaded `.env.local` during deployment. It was removed and is ignored by Git. No secret values are in this handoff or the repository.
 
-The project evolved through these major updates:
+## Next-agent priorities
 
-1. Initial repository creation, private GitHub repository, Vercel project, environment variables, and production deployment.
-2. Runtime compatibility pinning for Vercel Node.
-3. Multilingual guided planning experience and farmer flow.
-4. Technical decision view and AI explanation helper.
-5. v4 full code refresh with advisor chat, Q&A, climate chart, and richer plan UI.
-6. Premium visual pass with thinner borders and cleaner controls.
-7. Expanded crop catalog with sesame, soybean, onion, and tomato.
-8. Opt-in approximate location selector with device-only coarse zone selection.
-9. Google AI provider fallback plus Hugging Face provider fallback.
-10. Clear provider error messages after diagnosing disabled Google API and unavailable Hugging Face provider routes.
-11. Full decision-engine context sent to AI, including factor scores, weights, crop requirements, observations, rules, and explicit comparisons.
-12. Top navigation **Ask FieldShift** real-AI chat panel.
-13. Latest input-visibility fix for the top chat box and this handoff document.
-
-## Security and credential hygiene
-
-Credentials were supplied during setup and used only for authorized repository/deployment operations. They must not be copied into source files or this handoff document. Because credentials were pasted into chat during setup, rotate the GitHub token, Google AI key, Hugging Face token, and Vercel token when practical, then update only the corresponding production secret values.
-
-If a credential is accidentally committed:
-
-1. Revoke it immediately.
-2. Replace the production secret.
-3. Remove the value from tracked files.
-4. Check Git history and rotate again if necessary.
-
-## Product guardrails for future agents
-
-- Do not let AI modify scores, remove gates, or invent agronomic facts.
-- Do not silently collect location or device data.
-- Keep location opt-in and coarse.
-- Preserve offline deterministic planning.
-- Keep question and provider errors visible to the farmer.
-- Do not claim crop parameters are validated while `PLACEHOLDER` is true.
-- Keep the original project and feature names unless the owner explicitly requests a rename.
-- Test both a normal plan run and a real AI question after every AI-context change.
+1. Preserve all deterministic rules and safety boundaries.
+2. Replace the illustrative rainfall perturbation with verified annual observations.
+3. Add rolling-origin evaluation against persistence and seasonal-naive baselines.
+4. Source and review crop parameters with an agronomist or agricultural institution.
+5. Validate forecast intervals, missing-data behavior, and useful horizon locally.
+6. Add authentication and monitoring to any Lag-Llama worker.
+7. Consider moving the rule engine into a shared module so browser and replay implementations cannot drift.
+8. Have native Hausa, Yoruba, and Igbo speakers review translations.
+9. Test main and Lite modes on real low-end Android/KaiOS-style devices.
+10. Do not claim farmer outcomes until a real retrospective or prospective evaluation supports them.
