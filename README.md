@@ -29,6 +29,10 @@ uvicorn forecast.lag_llama_worker:app --host 0.0.0.0 --port 8000
 
 The worker's `/` endpoint is a health check. Keep it behind authentication or a private network in production. Do not put model or service credentials in frontend code.
 
+## Reproducible hackathon case study
+
+The repository includes an honest cutoff replay for a Kano farmer: [the case-study paper](examples/2020-kano-cutoff-paper.md), [the replay script](tools/replay-case.mjs), and its generated [JSON result](examples/2020-kano-cutoff-replay.json). Run `node tools/replay-case.mjs` to regenerate it. The current repository has zone climatology rather than annual 2020 observations, so the replay uses a clearly labeled 30% rainy-season stress perturbation. It demonstrates how the app could have helped before planting; it must not be presented as proof of real historical farmer impact until verified year-by-year data and outcomes are added.
+
 ## Local development and tests
 
 The project is a static HTML/CSS/JavaScript app with Vercel serverless functions and Node 22.

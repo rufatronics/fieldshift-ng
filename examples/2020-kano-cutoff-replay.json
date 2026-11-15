@@ -1,0 +1,782 @@
+{
+  "title": "Kano 2020 cutoff replay: a drought-stress rotation decision",
+  "status": "illustrative scenario; not observed impact evidence",
+  "cutoffYear": 2020,
+  "dataNote": "The checked-in app contains zone climatology, not annual 2020 observations. The 30% rainy-season reduction is a transparent stress-test perturbation. Replace it with verified year-by-year observations before making historical claims.",
+  "farmer": {
+    "zone": "Kano",
+    "low": true,
+    "irr": false,
+    "store": "poor",
+    "previous": [
+      "Maize",
+      "Maize",
+      "Groundnut"
+    ],
+    "pref": [
+      "cowpea",
+      "millet",
+      "sesame"
+    ],
+    "weights": {
+      "water": 4,
+      "soil": 4,
+      "store": 4,
+      "cash": 3
+    },
+    "preferences": [
+      "Cowpea",
+      "Pearl millet",
+      "Sesame"
+    ]
+  },
+  "normalClimatology": {
+    "current": {
+      "sequence": [
+        "maize",
+        "maize",
+        "groundnut"
+      ],
+      "score": 47,
+      "crops": [
+        {
+          "id": "maize",
+          "name": "Maize",
+          "score": 76,
+          "gate": false,
+          "factors": {
+            "water": 90,
+            "season": 78,
+            "heat": 100,
+            "flood": 28,
+            "store": 100,
+            "soil": 52,
+            "market": 55
+          },
+          "rules": [
+            {
+              "id": "R-FLOOD-04",
+              "type": "penalty",
+              "detail": "peak rain 290 mm"
+            }
+          ]
+        },
+        {
+          "id": "maize",
+          "name": "Maize",
+          "score": 76,
+          "gate": false,
+          "factors": {
+            "water": 90,
+            "season": 78,
+            "heat": 100,
+            "flood": 28,
+            "store": 100,
+            "soil": 52,
+            "market": 55
+          },
+          "rules": [
+            {
+              "id": "R-FLOOD-04",
+              "type": "penalty",
+              "detail": "peak rain 290 mm"
+            }
+          ]
+        },
+        {
+          "id": "groundnut",
+          "name": "Groundnut",
+          "score": 0,
+          "gate": true,
+          "factors": {
+            "water": 100,
+            "season": 78,
+            "heat": 100,
+            "flood": 3,
+            "store": 100,
+            "soil": 94,
+            "market": 55
+          },
+          "rules": [
+            {
+              "id": "R-FLOOD-04",
+              "type": "gate",
+              "detail": "peak rain 290 mm on low plot"
+            }
+          ]
+        }
+      ],
+      "notes": [
+        "R-SEQ-02: 1 repeated transition(s)",
+        "R-SEQ-03: 2 grain/legume or family switch(es)",
+        "R-GATE: a crop failed a gate"
+      ]
+    },
+    "alternatives": [
+      {
+        "sequence": [
+          "sorghum",
+          "maize",
+          "soybean"
+        ],
+        "score": 86,
+        "crops": [
+          {
+            "id": "sorghum",
+            "name": "Sorghum",
+            "score": 81,
+            "gate": false,
+            "factors": {
+              "water": 100,
+              "season": 72,
+              "heat": 100,
+              "flood": 52,
+              "store": 100,
+              "soil": 58,
+              "market": 55
+            },
+            "rules": [
+              {
+                "id": "R-FLOOD-04",
+                "type": "penalty",
+                "detail": "peak rain 290 mm"
+              }
+            ]
+          },
+          {
+            "id": "maize",
+            "name": "Maize",
+            "score": 76,
+            "gate": false,
+            "factors": {
+              "water": 90,
+              "season": 78,
+              "heat": 100,
+              "flood": 28,
+              "store": 100,
+              "soil": 52,
+              "market": 55
+            },
+            "rules": [
+              {
+                "id": "R-FLOOD-04",
+                "type": "penalty",
+                "detail": "peak rain 290 mm"
+              }
+            ]
+          },
+          {
+            "id": "soybean",
+            "name": "Soybean",
+            "score": 88,
+            "gate": false,
+            "factors": {
+              "water": 100,
+              "season": 78,
+              "heat": 100,
+              "flood": 28,
+              "store": 100,
+              "soil": 94,
+              "market": 55
+            },
+            "rules": [
+              {
+                "id": "R-FLOOD-04",
+                "type": "penalty",
+                "detail": "peak rain 290 mm"
+              }
+            ]
+          }
+        ],
+        "notes": [
+          "R-SEQ-03: 2 grain/legume or family switch(es)"
+        ]
+      },
+      {
+        "sequence": [
+          "sorghum",
+          "rice",
+          "soybean"
+        ],
+        "score": 81,
+        "crops": [
+          {
+            "id": "sorghum",
+            "name": "Sorghum",
+            "score": 81,
+            "gate": false,
+            "factors": {
+              "water": 100,
+              "season": 72,
+              "heat": 100,
+              "flood": 52,
+              "store": 100,
+              "soil": 58,
+              "market": 55
+            },
+            "rules": [
+              {
+                "id": "R-FLOOD-04",
+                "type": "penalty",
+                "detail": "peak rain 290 mm"
+              }
+            ]
+          },
+          {
+            "id": "rice",
+            "name": "Rainfed rice",
+            "score": 61,
+            "gate": false,
+            "factors": {
+              "water": 14,
+              "season": 66,
+              "heat": 85,
+              "flood": 100,
+              "store": 100,
+              "soil": 52,
+              "market": 55
+            },
+            "rules": [
+              {
+                "id": "R-WATER-01",
+                "type": "penalty",
+                "detail": "785 mm vs 900–1200 mm need"
+              }
+            ]
+          },
+          {
+            "id": "soybean",
+            "name": "Soybean",
+            "score": 88,
+            "gate": false,
+            "factors": {
+              "water": 100,
+              "season": 78,
+              "heat": 100,
+              "flood": 28,
+              "store": 100,
+              "soil": 94,
+              "market": 55
+            },
+            "rules": [
+              {
+                "id": "R-FLOOD-04",
+                "type": "penalty",
+                "detail": "peak rain 290 mm"
+              }
+            ]
+          }
+        ],
+        "notes": [
+          "R-SEQ-03: 2 grain/legume or family switch(es)"
+        ]
+      },
+      {
+        "sequence": [
+          "maize",
+          "rice",
+          "soybean"
+        ],
+        "score": 79,
+        "crops": [
+          {
+            "id": "maize",
+            "name": "Maize",
+            "score": 76,
+            "gate": false,
+            "factors": {
+              "water": 90,
+              "season": 78,
+              "heat": 100,
+              "flood": 28,
+              "store": 100,
+              "soil": 52,
+              "market": 55
+            },
+            "rules": [
+              {
+                "id": "R-FLOOD-04",
+                "type": "penalty",
+                "detail": "peak rain 290 mm"
+              }
+            ]
+          },
+          {
+            "id": "rice",
+            "name": "Rainfed rice",
+            "score": 61,
+            "gate": false,
+            "factors": {
+              "water": 14,
+              "season": 66,
+              "heat": 85,
+              "flood": 100,
+              "store": 100,
+              "soil": 52,
+              "market": 55
+            },
+            "rules": [
+              {
+                "id": "R-WATER-01",
+                "type": "penalty",
+                "detail": "785 mm vs 900–1200 mm need"
+              }
+            ]
+          },
+          {
+            "id": "soybean",
+            "name": "Soybean",
+            "score": 88,
+            "gate": false,
+            "factors": {
+              "water": 100,
+              "season": 78,
+              "heat": 100,
+              "flood": 28,
+              "store": 100,
+              "soil": 94,
+              "market": 55
+            },
+            "rules": [
+              {
+                "id": "R-FLOOD-04",
+                "type": "penalty",
+                "detail": "peak rain 290 mm"
+              }
+            ]
+          }
+        ],
+        "notes": [
+          "R-SEQ-03: 2 grain/legume or family switch(es)"
+        ]
+      }
+    ]
+  },
+  "droughtStress": {
+    "current": {
+      "sequence": [
+        "maize",
+        "maize",
+        "groundnut"
+      ],
+      "score": 65,
+      "crops": [
+        {
+          "id": "maize",
+          "name": "Maize",
+          "score": 64,
+          "gate": false,
+          "factors": {
+            "water": 33,
+            "season": 78,
+            "heat": 100,
+            "flood": 49,
+            "store": 100,
+            "soil": 52,
+            "market": 55
+          },
+          "rules": [
+            {
+              "id": "R-WATER-01",
+              "type": "penalty",
+              "detail": "532 mm vs 500–800 mm need"
+            },
+            {
+              "id": "R-FLOOD-04",
+              "type": "penalty",
+              "detail": "peak rain 203 mm"
+            }
+          ]
+        },
+        {
+          "id": "maize",
+          "name": "Maize",
+          "score": 64,
+          "gate": false,
+          "factors": {
+            "water": 33,
+            "season": 78,
+            "heat": 100,
+            "flood": 49,
+            "store": 100,
+            "soil": 52,
+            "market": 55
+          },
+          "rules": [
+            {
+              "id": "R-WATER-01",
+              "type": "penalty",
+              "detail": "532 mm vs 500–800 mm need"
+            },
+            {
+              "id": "R-FLOOD-04",
+              "type": "penalty",
+              "detail": "peak rain 203 mm"
+            }
+          ]
+        },
+        {
+          "id": "groundnut",
+          "name": "Groundnut",
+          "score": 79,
+          "gate": false,
+          "factors": {
+            "water": 59,
+            "season": 78,
+            "heat": 100,
+            "flood": 32,
+            "store": 100,
+            "soil": 94,
+            "market": 55
+          },
+          "rules": [
+            {
+              "id": "R-WATER-01",
+              "type": "penalty",
+              "detail": "532 mm vs 450–650 mm need"
+            },
+            {
+              "id": "R-FLOOD-04",
+              "type": "penalty",
+              "detail": "peak rain 203 mm"
+            }
+          ]
+        }
+      ],
+      "notes": [
+        "R-SEQ-02: 1 repeated transition(s)",
+        "R-SEQ-03: 2 grain/legume or family switch(es)"
+      ]
+    },
+    "alternatives": [
+      {
+        "sequence": [
+          "millet",
+          "cowpea",
+          "sesame"
+        ],
+        "score": 89,
+        "crops": [
+          {
+            "id": "millet",
+            "name": "Pearl millet",
+            "score": 75,
+            "gate": false,
+            "factors": {
+              "water": 89,
+              "season": 87,
+              "heat": 100,
+              "flood": 32,
+              "store": 68,
+              "soil": 58,
+              "market": 100
+            },
+            "rules": [
+              {
+                "id": "R-FLOOD-04",
+                "type": "penalty",
+                "detail": "peak rain 203 mm"
+              }
+            ]
+          },
+          {
+            "id": "cowpea",
+            "name": "Cowpea",
+            "score": 89,
+            "gate": false,
+            "factors": {
+              "water": 80,
+              "season": 96,
+              "heat": 100,
+              "flood": 32,
+              "store": 100,
+              "soil": 94,
+              "market": 100
+            },
+            "rules": [
+              {
+                "id": "R-FLOOD-04",
+                "type": "penalty",
+                "detail": "peak rain 203 mm"
+              }
+            ]
+          },
+          {
+            "id": "sesame",
+            "name": "Sesame",
+            "score": 84,
+            "gate": false,
+            "factors": {
+              "water": 100,
+              "season": 84,
+              "heat": 100,
+              "flood": 32,
+              "store": 100,
+              "soil": 58,
+              "market": 100
+            },
+            "rules": [
+              {
+                "id": "R-FLOOD-04",
+                "type": "penalty",
+                "detail": "peak rain 203 mm"
+              }
+            ]
+          }
+        ],
+        "notes": [
+          "R-SEQ-03: 3 grain/legume or family switch(es)"
+        ]
+      },
+      {
+        "sequence": [
+          "sorghum",
+          "cowpea",
+          "sesame"
+        ],
+        "score": 88,
+        "crops": [
+          {
+            "id": "sorghum",
+            "name": "Sorghum",
+            "score": 72,
+            "gate": false,
+            "factors": {
+              "water": 59,
+              "season": 72,
+              "heat": 100,
+              "flood": 66,
+              "store": 100,
+              "soil": 58,
+              "market": 55
+            },
+            "rules": [
+              {
+                "id": "R-WATER-01",
+                "type": "penalty",
+                "detail": "532 mm vs 450–650 mm need"
+              }
+            ]
+          },
+          {
+            "id": "cowpea",
+            "name": "Cowpea",
+            "score": 89,
+            "gate": false,
+            "factors": {
+              "water": 80,
+              "season": 96,
+              "heat": 100,
+              "flood": 32,
+              "store": 100,
+              "soil": 94,
+              "market": 100
+            },
+            "rules": [
+              {
+                "id": "R-FLOOD-04",
+                "type": "penalty",
+                "detail": "peak rain 203 mm"
+              }
+            ]
+          },
+          {
+            "id": "sesame",
+            "name": "Sesame",
+            "score": 84,
+            "gate": false,
+            "factors": {
+              "water": 100,
+              "season": 84,
+              "heat": 100,
+              "flood": 32,
+              "store": 100,
+              "soil": 58,
+              "market": 100
+            },
+            "rules": [
+              {
+                "id": "R-FLOOD-04",
+                "type": "penalty",
+                "detail": "peak rain 203 mm"
+              }
+            ]
+          }
+        ],
+        "notes": [
+          "R-SEQ-03: 3 grain/legume or family switch(es)"
+        ]
+      },
+      {
+        "sequence": [
+          "cowpea",
+          "groundnut",
+          "sesame"
+        ],
+        "score": 88,
+        "crops": [
+          {
+            "id": "cowpea",
+            "name": "Cowpea",
+            "score": 89,
+            "gate": false,
+            "factors": {
+              "water": 80,
+              "season": 96,
+              "heat": 100,
+              "flood": 32,
+              "store": 100,
+              "soil": 94,
+              "market": 100
+            },
+            "rules": [
+              {
+                "id": "R-FLOOD-04",
+                "type": "penalty",
+                "detail": "peak rain 203 mm"
+              }
+            ]
+          },
+          {
+            "id": "groundnut",
+            "name": "Groundnut",
+            "score": 79,
+            "gate": false,
+            "factors": {
+              "water": 59,
+              "season": 78,
+              "heat": 100,
+              "flood": 32,
+              "store": 100,
+              "soil": 94,
+              "market": 55
+            },
+            "rules": [
+              {
+                "id": "R-WATER-01",
+                "type": "penalty",
+                "detail": "532 mm vs 450–650 mm need"
+              },
+              {
+                "id": "R-FLOOD-04",
+                "type": "penalty",
+                "detail": "peak rain 203 mm"
+              }
+            ]
+          },
+          {
+            "id": "sesame",
+            "name": "Sesame",
+            "score": 84,
+            "gate": false,
+            "factors": {
+              "water": 100,
+              "season": 84,
+              "heat": 100,
+              "flood": 32,
+              "store": 100,
+              "soil": 58,
+              "market": 100
+            },
+            "rules": [
+              {
+                "id": "R-FLOOD-04",
+                "type": "penalty",
+                "detail": "peak rain 203 mm"
+              }
+            ]
+          }
+        ],
+        "notes": [
+          "R-SEQ-03: 2 grain/legume or family switch(es)"
+        ]
+      }
+    ]
+  },
+  "floodStressTopOption": {
+    "sequence": [
+      "millet",
+      "cowpea",
+      "sesame"
+    ],
+    "score": 6,
+    "crops": [
+      {
+        "id": "millet",
+        "name": "Pearl millet",
+        "score": 0,
+        "gate": true,
+        "factors": {
+          "water": 100,
+          "season": 87,
+          "heat": 100,
+          "flood": 0,
+          "store": 68,
+          "soil": 58,
+          "market": 100
+        },
+        "rules": [
+          {
+            "id": "R-FLOOD-04",
+            "type": "gate",
+            "detail": "peak rain 363 mm on low plot"
+          }
+        ]
+      },
+      {
+        "id": "cowpea",
+        "name": "Cowpea",
+        "score": 0,
+        "gate": true,
+        "factors": {
+          "water": 100,
+          "season": 96,
+          "heat": 100,
+          "flood": 0,
+          "store": 100,
+          "soil": 94,
+          "market": 100
+        },
+        "rules": [
+          {
+            "id": "R-FLOOD-04",
+            "type": "gate",
+            "detail": "peak rain 363 mm on low plot"
+          }
+        ]
+      },
+      {
+        "id": "sesame",
+        "name": "Sesame",
+        "score": 0,
+        "gate": true,
+        "factors": {
+          "water": 100,
+          "season": 84,
+          "heat": 100,
+          "flood": 0,
+          "store": 100,
+          "soil": 58,
+          "market": 100
+        },
+        "rules": [
+          {
+            "id": "R-FLOOD-04",
+            "type": "gate",
+            "detail": "peak rain 363 mm on low plot"
+          }
+        ]
+      }
+    ],
+    "notes": [
+      "R-SEQ-03: 3 grain/legume or family switch(es)",
+      "R-GATE: a crop failed a gate"
+    ]
+  },
+  "interpretation": [
+    "At the cutoff, the farmer's current maize-heavy rotation is tested against a drier rainy season and poor storage on a low plot.",
+    "A safer alternative is useful only if it avoids gates and has a better score under the same farmer constraints.",
+    "This demonstrates how the app could have helped a farmer notice water and storage risk before planting; it does not prove a real-world yield or income effect.",
+    "The recommendation must still be checked with local extension advice because crop parameters are placeholders."
+  ]
+}
