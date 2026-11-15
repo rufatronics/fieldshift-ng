@@ -78,7 +78,7 @@ module.exports = async (req, res) => {
 
   return res.status(502).json({
     error: hasGoogle && hasHF
-      ? "The AI providers rejected this request. Check the Google AI Studio and Hugging Face tokens."
-      : "No AI provider is configured. Add a valid Google AI Studio or Hugging Face token.",
+      ? "Google AI Studio is disabled for this key and the Hugging Face fallback has no available provider credits. Enable the Generative Language API for the Google project or replace the Google key; then try again."
+      : "No usable AI provider is configured. Add a valid Google AI Studio key with Generative Language API enabled.",
   });
 };
