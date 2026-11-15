@@ -29,7 +29,7 @@ label{display:block;margin:14px 0 4px;font-weight:600}input[type=range]{width:10
 .nd{display:grid;grid-template-columns:44px 1fr;border:1px solid var(--ink);background:var(--sf)}.nd b{background:var(--ink);color:var(--on);display:flex;align-items:center;justify-content:center;font-size:15px}.nd div{padding:10px 14px}.nd h3{margin:0 0 2px;font-size:16px}.nd p{margin:2px 0;font-size:14.5px}.ar{text-align:center;color:var(--mut);font:14px/1.2 ui-monospace,monospace;padding:3px 0}
 .chip{display:inline-block;border:1px solid var(--ink);padding:1px 8px;margin:2px 4px 2px 0;font-size:12.5px}.wr{display:grid;grid-template-columns:78px 1fr 92px;gap:8px;align-items:center;margin:7px 0;font-size:13px}.bar{height:20px;background:var(--ink);clip-path:polygon(0 0,calc(100% - 7px) 0,100% 7px,100% 100%,0 100%)}.bar.m{background:var(--mau)}.trk{background:var(--rose);height:20px}
 #tc{width:100%;min-height:50px;padding:8px;border:1px solid var(--ink);background:var(--sf);color:var(--ink);font:inherit}.cs div{padding:7px 0;border-bottom:1px solid var(--rose)}pre{white-space:pre-wrap;word-break:break-word;font-size:12px;line-height:1.4;background:var(--bg);border:1px solid var(--ink);padding:8px}
-footer{border-top:1px solid var(--ink);padding:18px;font:13px/1.5 ui-monospace,monospace;color:var(--mut)}[hidden]{display:none!important}
+footer{border-top:1px solid var(--ink);padding:18px;font:13px/1.5 ui-monospace,monospace;color:var(--mut)}.forecast{border:1px solid var(--ink);background:var(--sf);margin:22px 0}.forecast .hd{padding:10px 16px;border-bottom:1px solid var(--ink);display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap}.forecast .bdy{padding:14px 16px}.forecast .band{display:grid;grid-template-columns:52px 1fr 70px;gap:8px;align-items:center;margin:8px 0;font-size:13px}.forecast .bar{position:relative;height:22px;background:var(--rose);overflow:hidden}.forecast .range{position:absolute;top:0;height:100%;background:var(--mau)}.forecast .point{position:absolute;top:0;width:3px;height:100%;background:var(--ink)}[hidden]{display:none!important}
 @media(prefers-reduced-motion:no-preference){.msg,.card{animation:in .25s}}@keyframes in{from{opacity:0;transform:translateY(6px)}}
 </style></head><body>
 <div class="frame">
@@ -41,7 +41,7 @@ footer{border-top:1px solid var(--ink);padding:18px;font:13px/1.5 ui-monospace,m
 <section class="stats"><div><b>3</b><small>ZONES</small></div><div><b>2005–2025</b><small>DATA YEARS</small></div><div><b>4</b><small>LANGUAGES</small></div><div><b>Offline</b><small>PLAN RUNS ON PHONE</small></div></section>
 <section class="pad rule"><div class="lbl" id="hl"></div><div id="hc"></div></section>
 <section class="pad" id="adv"><div class="lbl">ADVISOR</div><div id="thread" aria-live="polite"></div>
-<div id="plan" hidden><div id="cards"></div><div class="lbl" id="rl"></div><div id="rc"></div>
+<div id="plan" hidden><div id="cards"></div><div id="forecastCard" class="forecast" hidden></div><div class="lbl" id="rl"></div><div id="rc"></div>
 <div class="ai"><div class="hd"><b data-i="aiTitle"></b><span id="aist"></span></div><div class="bdy"><div id="aitxt" role="status" aria-live="polite"></div><div class="btns"><button class="btn" id="nar" data-i="explain"></button><button class="btn alt" id="lis" data-i="listen" hidden></button></div></div></div>
 <div class="lbl" data-i="ask"></div><div class="chips" id="qc"></div><div id="qlog"></div><div class="qrow"><input id="qin" maxlength="200" aria-label="question"><button class="btn" id="qsend" data-i="send"></button></div>
 <details><summary data-i="tune"></summary><label for="w_water" data-k="pw"></label><input type="range" id="w_water" min="1" max="5" value="3"><label for="w_soil" data-k="ps"></label><input type="range" id="w_soil" min="1" max="5" value="3"><label for="w_store" data-k="pt"></label><input type="range" id="w_store" min="1" max="5" value="3"><label for="w_cash" data-k="pc"></label><input type="range" id="w_cash" min="1" max="5" value="3">
@@ -94,6 +94,18 @@ function card(r,title){const u=3+2*GK.length,s=Math.round(r.s),b=r.bad?"weak":s>
  <details><summary>${t("gaps")}</summary><ul>${GK.map(g=>"<li>"+t(g)+"</li>").join("")}</ul></details><p class="sm"><b>${t("review")}</b></p></div></div>`}
 function cards(){const{base,c,p,x}=calc();$("cards").innerHTML=card(base,t("now"))+(c.length<2?`<span class="test">${t("none")}</span>`:"")+c.map(r=>card(r,t("opt"))).join("");
  $("rl").textContent=ZONES[p.zone].name.toUpperCase()+" · "+t("k_water").toUpperCase()+" mm";$("rc").innerHTML=chart(x,"2005–2025 · mm / month");$("vr").textContent=p.dRain;$("vt").textContent=p.dT}
+async function loadForecast(){
+ const box=$("forecastCard");box.hidden=false;box.innerHTML='<div class="hd"><b>EXPERIMENTAL FORECAST</b><span class="ti">loading…</span></div><div class="bdy sm">Checking the optional forecast worker. Your rule-based plan remains available.</div>';
+ const vals=LAST.x.rain.map(Number);
+ try{
+  const r=await fetch("/api/forecast",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({values:vals,horizon:3,frequency:"monthly",target:"rainfall"})});
+  const j=await r.json().catch(()=>({}));
+  if(!r.ok||!Array.isArray(j.forecast))throw Error(j.error||"Forecast unavailable");
+  const max=Math.max(1,...vals,...j.forecast.map(v=>Number(v.high)||0));
+  const rows=j.forecast.map(v=>{const lo=Number(v.low)||0,hi=Number(v.high)||0,pt=Number(v.point)||0;return `<div class="band"><span>Month ${v.period}</span><div class="bar"><i class="range" style="left:${lo/max*100}%;width:${Math.max(1,(hi-lo)/max*100)}%"></i><i class="point" style="left:${pt/max*100}%"></i></div><b>${pt} mm</b></div>`}).join("");
+  box.innerHTML=`<div class="hd"><b>EXPERIMENTAL RAINFALL FORECAST</b><span class="ti">${j.model||"advisory"}${j.fallback?" · local fallback":""}</span></div><div class="bdy"><div>${rows}</div><p class="sm">Bands show uncertainty. This is advisory only; deterministic gates and scores decide the plan. ${j.fallback?"The model worker is not connected, so FieldShift is using a seasonal baseline.":"Forecast supplied by the optional worker."}</p></div>`;
+ }catch(e){box.innerHTML='<div class="hd"><b>EXPERIMENTAL FORECAST</b><span class="ti">offline</span></div><div class="bdy sm">No forecast is available. The deterministic FieldShift plan still works offline.</div>'}
+}
 // ---- AI helper: GET says whether the key is set; POST explains or answers; failure falls back, never breaks the page
 	async function callAI(q){const ac=new AbortController(),to=setTimeout(()=>ac.abort(),25000);try{
 	 const r=await fetch("/api/narrate",{method:"POST",headers:{"Content-Type":"application/json"},signal:ac.signal,body:JSON.stringify({lang:LG,baseline:brief(LAST.base),options:LAST.c.map(brief),screen:screen(),q})});
@@ -118,7 +130,7 @@ async function run(){const id=++RUN,preZone=S.zone;const ask=async(q,items,multi
  S.store=await ask(t("store"),[["good",t("sg")],["ok",t("sa")],["poor",t("sp")]]);
  for(let i=0;i<3;i++)S.cur.push(await ask(i?`${t("sn")} ${i+1}`:`${t("cur")} ${t("sn")} 1`,Object.keys(CROPS).map(k=>[k,EM[k]+" "+N(k)])));
  S.pref=await ask(t("pref"),Object.keys(CROPS).map(k=>[k,EM[k]+" "+N(k)]),true);S.done=true;add("bot",t("plan"));showPlan()}catch(e){}}
-function showPlan(){$("plan").hidden=false;cards();$("qc").innerHTML="";["qa1","qa2","qa3"].forEach(k=>{const b=document.createElement("button");b.className="c2";b.textContent=t(k);b.onclick=()=>askQ(b.textContent);$("qc").appendChild(b)});$("qlog").innerHTML="";$("qin").placeholder=t("ask");explain();$("plan").scrollIntoView({block:"start"})}
+function showPlan(){$("plan").hidden=false;cards();loadForecast();$("qc").innerHTML="";["qa1","qa2","qa3"].forEach(k=>{const b=document.createElement("button");b.className="c2";b.textContent=t(k);b.onclick=()=>askQ(b.textContent);$("qc").appendChild(b)});$("qlog").innerHTML="";$("qin").placeholder=t("ask");explain();$("plan").scrollIntoView({block:"start"})}
 // ---- Technical tab: same numbers as the decision chain
 const RULES=[["R-WATER-01","gate/penalty","Rain in the crop's growing months (+150 mm if irrigated) vs its water need"],["R-SEASON-02","gate","Crop cycle longer than the rainy season removes the crop"],["R-HEAT-03","penalty","Hottest month in the window vs crop heat limit (27 + 2 x tolerance C)"],["R-FLOOD-04","gate/penalty","Peak monthly rain on a low plot vs flood tolerance"],["R-STORE-05","penalty","Harvest-month humidity x rot sensitivity x storage quality"],["R-SEQ-01","-10","Rotation has no legume"],["R-SEQ-02","-8 each","Same crop back to back"],["R-SEQ-03","+2 each","Switch between grain and legume"],["R-GATE","flag","Any crop in the rotation failed a gate: not recommended"]];
 const nd=(n,h,b)=>`<div class="nd"><b>${n}</b><div><h3>${h}</h3>${b}</div></div>`,AR='<div class="ar">▼</div>',DM=typeof DATA_META!="undefined"&&DATA_META;
