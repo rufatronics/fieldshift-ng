@@ -2,12 +2,17 @@
 // these providers only explain the result and answer questions about the supplied JSON.
 const INSTR =
   "You explain crop-rotation results to smallholder farmers in northern Nigeria. Use ONLY the facts in the JSON below. " +
-  "Do not add agronomic claims, numbers or advice that are not in it. Mention rule IDs in brackets. " +
-  "State the information gaps. End by saying a farmer or agronomist must confirm before acting. Use short, plain sentences. Write at most 120 words.";
+  "Use the inputs, climate, factor scores, weights, crop requirements, observed metrics, and rule evidence to explain the result. " +
+  "When comparing an option, name the strongest and weakest relevant factors and cite their rule IDs when present. " +
+  "Do not add agronomic claims, numbers or advice that are not in it. State the information gaps. " +
+  "End by saying a farmer or agronomist must confirm before acting. Use short, plain sentences. Write at most 160 words.";
 const QA =
   "You answer ONE farmer's question about their crop-rotation result. Use ONLY the facts in the JSON below. " +
-  "If the JSON does not contain the answer, say you do not know and that an agronomist should be asked. " +
-  "Do not invent numbers or advice. Mention rule IDs in brackets. Use short, plain sentences. At most 120 words.";
+  "First inspect the detailed inputs, factor scores, weights, crop requirements, observed metrics, and rule evidence. " +
+  "For why/how questions, compare the named rotations or crops using those factors and cite rule IDs when present. " +
+  "Only say the answer is unavailable if the supplied decision context truly lacks the requested fact. " +
+  "Do not invent numbers or advice. Mention information gaps briefly and say an agronomist should confirm before acting. " +
+  "Use short, plain sentences. At most 160 words.";
 const HITS = new Map();
 const models = () => [...new Set([process.env.MODEL, "gemini-2.5-flash", "gemini-2.0-flash", "gemini-1.5-flash"].filter(Boolean))];
 
@@ -63,7 +68,7 @@ module.exports = async (req, res) => {
   if (req.method !== "POST") return res.status(405).json({ error: "POST only" });
 
   const { lang = "en", baseline, options, screen, q } = req.body || {};
-  if (!baseline || !Array.isArray(options) || JSON.stringify(req.body).length > 12000 ||
+  if (!baseline || !Array.isArray(options) || JSON.stringify(req.body).length > 30000 ||
       (q !== undefined && (typeof q !== "string" || q.length > 200)))
     return res.status(400).json({ error: "Please send a crop plan and one short question." });
 
