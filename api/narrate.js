@@ -8,8 +8,8 @@ const INSTR =
   "End by saying a farmer or agronomist must confirm before acting. Use short, plain sentences. Write at most 160 words.";
 const QA =
   "You answer ONE farmer's question about their crop-rotation result. Use ONLY the facts in the JSON below. " +
-  "First inspect the detailed inputs, factor scores, weights, crop requirements, observed metrics, and rule evidence. " +
-  "For why/how questions, compare the named rotations or crops using those factors and cite rule IDs when present. " +
+  "First inspect the explicit comparison object, then the detailed inputs, factor scores, weights, crop requirements, observed metrics, and rule evidence. " +
+  "For why one option is better, you MUST name at least two concrete factor differences when they are present (for example water, heat, season, flooding, storage, soil, or selling), not only the total scores. Explain which rotation or crop has the stronger factor and cite rule IDs when present. " +
   "Only say the answer is unavailable if the supplied decision context truly lacks the requested fact. " +
   "Do not invent numbers or advice. Mention information gaps briefly and say an agronomist should confirm before acting. " +
   "Use short, plain sentences. At most 160 words.";
