@@ -94,15 +94,15 @@ function card(r,title){const u=3+2*GK.length,s=Math.round(r.s),b=r.bad?"weak":s>
 function cards(){const{base,c,p,x}=calc();$("cards").innerHTML=card(base,t("now"))+(c.length<2?`<span class="test">${t("none")}</span>`:"")+c.map(r=>card(r,t("opt"))).join("");
  $("rl").textContent=ZONES[p.zone].name.toUpperCase()+" · "+t("k_water").toUpperCase()+" mm";$("rc").innerHTML=chart(x,"2005–2025 · mm / month");$("vr").textContent=p.dRain;$("vt").textContent=p.dT}
 // ---- AI helper: GET says whether the key is set; POST explains or answers; failure falls back, never breaks the page
-async function callAI(q){const ac=new AbortController(),to=setTimeout(()=>ac.abort(),25000);try{
- const r=await fetch("/api/narrate",{method:"POST",headers:{"Content-Type":"application/json"},signal:ac.signal,body:JSON.stringify({lang:LG,baseline:brief(LAST.base),options:LAST.c.map(brief),screen:screen(),q})});
- if(!r.ok)throw 0;return(await r.json()).text}catch(e){return null}finally{clearTimeout(to)}}
+	async function callAI(q){const ac=new AbortController(),to=setTimeout(()=>ac.abort(),25000);try{
+	 const r=await fetch("/api/narrate",{method:"POST",headers:{"Content-Type":"application/json"},signal:ac.signal,body:JSON.stringify({lang:LG,baseline:brief(LAST.base),options:LAST.c.map(brief),screen:screen(),q})});
+	 const j=await r.json().catch(()=>({}));if(!r.ok)return{error:j.error||"The AI service could not answer right now."};return{text:j.text,provider:j.provider}}catch(e){return{error:"The AI service could not be reached. Your offline plan is still available."}}finally{clearTimeout(to)}}
 const local=()=>[LAST.base].concat(LAST.c).map((r,i)=>`${i?t("opt"):t("now")}: ${r.seq.map(N).join(" > ")} = ${Math.round(r.s)}/100`).join("\n")+"\n"+t("review");
 function reveal(el,txt){const id=++TOK;if(matchMedia("(prefers-reduced-motion:reduce)").matches){el.textContent=txt;return}const w=txt.split(" ");let i=0;const iv=setInterval(()=>{if(id!=TOK||i>=w.length)return clearInterval(iv);el.textContent=w.slice(0,++i).join(" ")},28)}
 let VO=[];const hasTTS="speechSynthesis"in window,loadV=()=>{VO=speechSynthesis.getVoices()},voice=()=>VO.find(v=>v.lang.toLowerCase().startsWith(LG));if(hasTTS){loadV();speechSynthesis.onvoiceschanged=loadV}
-async function explain(){const o=$("aitxt"),b=$("nar");b.disabled=true;$("lis").hidden=true;o.textContent=t("work");const r=await callAI(),txt=r||t("local")+":\n"+local();o.textContent="";reveal(o,txt);b.disabled=false;$("lis").hidden=!(hasTTS&&voice());$("lis").onclick=()=>{speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(txt),v=voice();if(v){u.voice=v;u.lang=v.lang}speechSynthesis.speak(u)}}
+	async function explain(){const o=$("aitxt"),b=$("nar");b.disabled=true;$("lis").hidden=true;o.textContent=t("work");const r=await callAI(),txt=r?.text||t("local")+":\n"+local();o.textContent="";reveal(o,txt);if(r?.error)o.dataset.error=r.error;b.disabled=false;$("lis").hidden=!(hasTTS&&voice());$("lis").onclick=()=>{speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(txt),v=voice();if(v){u.voice=v;u.lang=v.lang}speechSynthesis.speak(u)}}
 async function askQ(q){q=q.trim();if(!q||!S.done)return;$("qin").value="";const l=$("qlog"),a=document.createElement("div"),m=document.createElement("div");m.className="msg me";m.textContent=q;a.className="msg bot";a.textContent=t("work");l.append(m,a);
- const r=AI===false?t("aiNone"):await callAI(q);a.textContent=r||t("off").split(".")[0]+".";a.scrollIntoView({block:"nearest"})}
+	 const r=AI===false?{error:t("aiNone")}:await callAI(q);a.textContent=r?.text||r?.error||t("off").split(".")[0]+".";a.scrollIntoView({block:"nearest"})}
 function aiStatus(){$("aist").textContent=AI===true?"● Gemma 4 · Google AI":AI===false?t("aiNone"):""}
 // ---- Chat advisor
 const th=()=>$("thread"),add=(c,h)=>{const d=document.createElement("div");d.className="msg "+c;if(c=="bot")d.innerHTML="<small>FIELDSHIFT</small>";d.append(h instanceof Node?h:document.createTextNode(h));th().appendChild(d);d.scrollIntoView({block:"nearest"})};
