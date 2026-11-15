@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>FieldShift Lite</title>
+<style>
+body{margin:0;background:#fff;color:#111;font:16px Arial,sans-serif;line-height:1.4}
+main{max-width:520px;margin:0 auto;padding:12px}
+h1{font-size:24px;margin:0 0 2px}h2{font-size:18px;border-bottom:1px solid #111;padding-bottom:4px;margin-top:20px}
+.small{font-size:13px;color:#444}.box{border:1px solid #111;padding:10px;margin:10px 0}
+label{display:block;margin:10px 0 3px;font-weight:bold}select,input,button{font:inherit;min-height:42px;box-sizing:border-box;width:100%;padding:7px;border:1px solid #111;background:#fff;color:#111}button{background:#111;color:#fff;font-weight:bold;margin-top:12px}button.secondary{background:#fff;color:#111}#result,#answer{white-space:pre-wrap}.ok{font-weight:bold}.warn{font-weight:bold;color:#8a2200}a{color:#0645ad}
+</style>
+</head>
+<body>
+<main>
+<h1>FieldShift Lite</h1>
+<p class="small">Low-data mode for basic phones. No charts, images, tracking, or background data.</p>
+<p><a href="/">Open full FieldShift</a></p>
+<form id="planForm" class="box">
+<h2>Quick plan</h2>
+<label for="zone">Zone</label>
+<select id="zone"><option value="kano">Kano</option><option value="katsina">Katsina</option><option value="sokoto">Sokoto</option></select>
+<label for="water">Rain this season</label>
+<select id="water"><option value="normal">Normal rain</option><option value="low">Less rain</option><option value="high">More rain</option></select>
+<label for="flood">Does the field flood?</label>
+<select id="flood"><option value="no">No</option><option value="yes">Yes</option></select>
+<label for="irrigation">Can you irrigate?</label>
+<select id="irrigation"><option value="no">No</option><option value="yes">Yes</option></select>
+<label for="last">Last main crop</label>
+<select id="last"><option value="sorghum">Sorghum</option><option value="millet">Pearl millet</option><option value="maize">Maize</option><option value="cowpea">Cowpea</option><option value="groundnut">Groundnut</option><option value="rice">Rainfed rice</option></select>
+<button type="submit">Make quick plan</button>
+</form>
+<section class="box"><h2>Result</h2><div id="result">Complete the short form to see a plan.</div></section>
+<section class="box"><h2>Ask AI</h2><p class="small">Ask about the quick plan. A network connection is required. Rules still decide the plan.</p><input id="question" maxlength="160" placeholder="Example: Why millet?"><button id="ask" type="button">Ask AI</button><div id="answer" class="small"></div></section>
+<p class="small">Lite mode is a quick screen. Use the full app or ask an agronomist before acting.</p>
+</main>
+<script>
+(function(){
+var zones={kano:'Kano',katsina:'Katsina',sokoto:'Sokoto'};
+var crops={millet:{n:'Pearl millet',w:1,d:4},sorghum:{n:'Sorghum',w:2,d:3},maize:{n:'Maize',w:3,d:1},cowpea:{n:'Cowpea',w:1,d:3},groundnut:{n:'Groundnut',w:2,d:2},rice:{n:'Rainfed rice',w:5,d:0}};
+var lastPlan=null;
+function makePlan(){var zone=document.getElementById('zone').value,water=document.getElementById('water').value,flood=document.getElementById('flood').value,irr=document.getElementById('irrigation').value,last=document.getElementById('last').value;
+ var rows=[],k;
+ for(k in crops){var c=crops[k],score=100-c.w*12-c.d*4;if(water==='low')score-=c.w*10;if(water==='high')score+=c.d*4;if(flood==='yes')score-=k==='rice'?-5:c.d*8;if(irr==='yes')score+=c.w*5;if(k===last)score-=8;rows.push({id:k,name:c.n,score:Math.max(0,Math.min(100,score))})}
+ rows.sort(function(a,b){return b.score-a.score});var best=rows[0],second=rows[1];
+ var text='Zone: '+zones[zone]+'\nBest quick option: '+best.name+' ('+best.score+'/100)\nSecond option: '+second.name+' ('+second.score+'/100)\n\n';
+ if(flood==='yes')text+='Warning: choose a raised or well-drained part of the field.\n';
+ if(water==='low'&&irr==='no')text+='Water warning: choose a drought-tolerant crop and confirm the season forecast.\n';
+ if(best.id===last)text+='Rotation note: repeating the same crop can increase pest pressure.\n';
+ text+='This is a low-data screen, not a final agronomy recommendation.';document.getElementById('result').textContent=text;
+ lastPlan={zone:zones[zone],best:best.name,second:second.name,score:best.score,conditions:{rain:water,flood:flood,irrigation:irr,last:crops[last].n},gaps:['No field soil test','No local price data','Lite mode uses fewer rules']};
+}
+document.getElementById('planForm').onsubmit=function(e){if(e&&e.preventDefault)e.preventDefault();makePlan();return false};
+document.getElementById('ask').onclick=function(){var q=document.getElementById('question').value,answer=document.getElementById('answer');if(!q){answer.textContent='Type a question first.';return}if(!lastPlan){answer.textContent='Make a quick plan first.';return}answer.textContent='Working...';var x=new XMLHttpRequest();x.open('POST','/api/narrate',true);x.setRequestHeader('Content-Type','application/json');x.onreadystatechange=function(){if(x.readyState!==4)return;try{var j=JSON.parse(x.responseText);answer.textContent=x.status===200&&j.text?j.text:(j.error||'AI is unavailable. Use the quick plan or open the full app.')}catch(e){answer.textContent='AI is unavailable. Check your connection.'}};x.onerror=function(){answer.textContent='AI is unavailable. Check your connection.'};x.send(JSON.stringify({lang:'en',q:q,baseline:{crops:[lastPlan.best],score:lastPlan.score,checks:[],gaps:lastPlan.gaps},options:[{crops:[lastPlan.second],score:0,checks:[],gaps:lastPlan.gaps}],screen:{mode:'lite',inputs:lastPlan.conditions,zone:lastPlan.zone}}));};
+}());
+</script>
+</body>
+</html>

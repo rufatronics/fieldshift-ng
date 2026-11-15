@@ -61,6 +61,12 @@ The crop catalog currently includes:
 
 Crop parameters are still marked as placeholders with `PLACEHOLDER = true` in `public/data.js`. Do not present the values as validated agronomic recommendations until they are sourced and reviewed by an agronomist or appropriate agricultural institution.
 
+### Ultra Lite mode
+
+`public/lite.html` is the low-resource version inside the same deployment at `https://fieldshift-ng.vercel.app/lite.html`. It uses one small HTML file, inline CSS, old-style JavaScript, no charts, no images, no external fonts, no tracking, and no framework. It is intended for older Nokia/KaiOS-style browsers, Opera Mini-like environments, slow connections, and very small screens.
+
+Lite mode provides a short form for zone, rain, flooding, irrigation, and last crop. It produces a quick local plan and can send a small text-only question to `/api/narrate` through `XMLHttpRequest` when a network connection exists. The full app remains the authoritative detailed planner; Lite mode clearly labels itself as a quick screen with fewer rules. The main app links to Lite mode as `/lite.html`.
+
 ### Optional location
 
 The landing flow includes an opt-in approximate-location button. It uses browser geolocation only to select the nearest coarse zone among Kano, Katsina, and Sokoto. Exact coordinates are not uploaded or stored. If permission is denied, the farmer can select a zone manually.
