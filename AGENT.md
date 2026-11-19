@@ -328,6 +328,68 @@ curl -sS -X POST https://fieldshift-ng.vercel.app/api/forecast \
   -d '{"values":[0,0,2,12,70,120,200,290,150,25,0,0],"horizon":3}'
 ```
 
+## Hardware/software extension proposal from the shared Claude discussion
+
+This section is a future proposal, not implemented functionality. Do not tell judges that sensors, SMS, or hardware are already working unless they are actually added and tested.
+
+The most realistic hardware direction is **FieldShift Field + Store**:
+
+- A shared, solar-powered field node for a cooperative plot or extension worker.
+- A small store node placed inside a grain store.
+- The existing FieldShift engine remains the decision authority; hardware only improves the inputs.
+
+The field node could use an ESP32, capacitive soil-moisture sensor, soil-temperature sensor, BME280 or equivalent air temperature/humidity sensor, and a tipping-bucket rain gauge. A water-level sensor can be added for flood-risk monitoring. The device should be sealed, shaded, dust-protected, and designed for heat. Bluetooth or local Wi-Fi keeps the connection offline-first; LoRa or GSM can be considered only when the deployment requires longer range.
+
+The store node is especially well aligned with the existing `R-STORE-05` rule. Temperature and humidity readings inside the grain store could replace the farmer's guessed storage condition and trigger a simple alert such as: “Store humidity high. Dry or ventilate grain today.” A GSM/SMS path would let a basic phone receive alerts without an app or data connection.
+
+The proposed end-to-end story is:
+
+1. **Before planting:** FieldShift uses the farmer's conditions and recommends a three-season plan.
+2. **During the season:** the field node supplies measured moisture, temperature, humidity, rain, and possibly water-level readings; the app reruns the same rules and shows which rule fired, such as `R-WATER-01` or `R-FLOOD-04`.
+3. **After harvest:** the store node watches humidity and temperature and sends a warning before grain spoilage becomes severe.
+4. **For basic phones:** SMS or the Lite page provides a short text readout.
+
+The realistic deployment unit is one node shared by a cooperative or extension worker, not one expensive node per farmer. A hardware MVP should prioritize capacitive soil moisture plus temperature/humidity, a local phone connection, and a simple “Live field” screen. Add rain, flood sensing, solar charging, store sensing, and SMS in that order if time allows.
+
+Hardware limitations must be stated: sensors need local soil calibration, one node measures one spot rather than an entire farm, and the enclosure must survive dust, heat, rain, and theft risk. Sensors improve the inputs; they do not validate the crop parameters.
+
+### Direct-impact demo scenario wording
+
+Use a fictional name such as **Malam Sani** and say clearly that it is an example scenario, not a real farmer study. Before planting, he has the Kano profile from the replay: a low plot, no irrigation, poor storage, and maize → maize → groundnut. Under the illustrative drought stress, the current plan scores 65/100 and pearl millet → cowpea → sesame scores 89/100. During the season, a field node can detect drying soil and show the water rule. After harvest, a store node can detect rising humidity and send a basic-phone warning before grain loss.
+
+The pitch line is:
+
+> Plan before planting, watch during the season, protect after harvest — even where the network does not.
+
+For a real pilot, measure grain lost to rot before and after, alert delivery and action rates, chosen rotations, sensor calibration error, and farmer outcomes. Never present the fictional person or the 65-to-89 replay as observed impact.
+
+## Presentation and judge answers
+
+Plain-language pitch:
+
+> FieldShift puts an expert farming checklist in a farmer's pocket. A farmer answers a few simple questions about the land, water, flooding, storage, previous crops, and what they want to sell. The app returns a three-season plan and safer alternatives. Fixed farming rules decide; AI only explains. The main plan works without internet.
+
+Suggested seven-slide structure:
+
+1. FieldShift NG: offline farm decision support for northern Nigeria.
+2. The problem: one planting decision can shape the whole year.
+3. The solution: a few farmer answers become a three-season plan.
+4. Trust: rules decide and AI explains.
+5. Works where the network does not: full app, quick Lite version, privacy, and local languages.
+6. Beyond the plan: advisory rainfall outlook and the Kano pre-planting replay.
+7. Closing: “An expert's checklist in every farmer's pocket.”
+
+The Lite version should be described accurately as a quick plan in a few taps with fewer rules, not as identical guidance to the full app. The forecast should be described as an experimental advisory signal. The Kano replay should be described as a tested illustrative scenario, not historical farmer impact.
+
+Likely judge answers:
+
+- **Why rules instead of AI?** Rules are auditable, testable, offline-capable, and prevent hallucinated recommendations. AI cannot change scores or gates.
+- **Does it work offline?** The deterministic plan does. AI and the optional forecast worker need connectivity; the forecast API has a local fallback.
+- **How does it reach basic-phone users?** The Lite page is a lightweight browser experience. The future hardware direction adds SMS for measured field/store alerts.
+- **How is privacy handled?** Exact location is not uploaded or stored. Optional location only selects a coarse zone on the device, and API keys remain server-side.
+- **How do you know recommendations are correct?** The engine is implemented and auditable, but crop parameters still need agronomist review and the system needs real retrospective evaluation.
+- **Why not existing apps?** FieldShift combines offline-first operation, rules-first safety, coarse privacy-preserving local context, rotation planning, and a path from manual inputs to measured sensors.
+
 ## Security status
 
 Credentials were exposed during setup and should be revoked and regenerated:
@@ -353,3 +415,4 @@ The Vercel CLI temporarily downloaded `.env.local` during deployment. It was rem
 8. Have native Hausa, Yoruba, and Igbo speakers review translations.
 9. Test main and Lite modes on real low-end Android/KaiOS-style devices.
 10. Do not claim farmer outcomes until a real retrospective or prospective evaluation supports them.
+11. If hardware work begins, create it as a separate, clearly labeled extension and keep the deterministic engine unchanged as the decision authority.
